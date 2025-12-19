@@ -1,0 +1,67 @@
+╔═══════════════════════════════════════════════════════════╗
+║     Audio Separator - Installation macOS                 ║
+╚═══════════════════════════════════════════════════════════╝
+
+📦 INSTALLATION RAPIDE (2 minutes)
+
+1. Décompresser le fichier ZIP
+
+2. Ouvrir le Terminal dans le dossier décompressé
+
+3. Exécuter ces 2 commandes :
+
+   chmod +x install-mac.sh
+   ./install-mac.sh
+
+4. Lancer Adobe Premiere Pro
+
+5. Aller dans : Fenêtre > Extensions > Audio Separator
+
+═══════════════════════════════════════════════════════════
+
+✅ PRÉREQUIS
+
+- macOS 10.15 ou supérieur
+- Adobe Premiere Pro 2020 ou supérieur
+- Python 3.11 (l'installateur vous guidera si absent)
+
+═══════════════════════════════════════════════════════════
+
+🎯 UTILISATION
+
+1. Sélectionnez un clip audio dans la timeline
+2. Cliquez sur "Sélectionner un clip"
+3. Configurez les options :
+   - Mode : 2 Stems ou 4 Stems
+   - Qualité : Rapide, Équilibrée ou Maximale
+   - Format : WAV, MP3 ou FLAC
+4. Cliquez sur "Séparer l'audio"
+5. Attendez la fin du traitement
+6. Les fichiers séparés apparaissent dans le même dossier
+
+═══════════════════════════════════════════════════════════
+
+🔧 DÉPANNAGE
+
+Plugin invisible dans Premiere Pro ?
+→ Relancez l'installateur : ./install-mac.sh
+→ Redémarrez Premiere Pro
+
+Erreur Python ?
+→ Installez Python 3.11 : brew install python@3.11
+→ Ou téléchargez sur python.org
+
+Traitement lent ?
+→ Utilisez le mode "Rapide" ou "Équilibré"
+→ Fermez les autres applications
+
+═══════════════════════════════════════════════════════════
+
+📖 DOCUMENTATION COMPLÈTE
+
+Consultez README.md pour plus de détails.
+
+═══════════════════════════════════════════════════════════
+
+Version : 2.1.0
+Plateforme : macOS uniquement

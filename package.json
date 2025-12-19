@@ -1,0 +1,30 @@
+{
+  "name": "premiere-pro-audio-separator",
+  "version": "2.1.0",
+  "description": "Professional Adobe Premiere Pro plugin to separate audio tracks into stems (vocals, instrumental, drums, bass) using AI-powered Demucs technology",
+  "main": "client/index.html",
+  "scripts": {
+    "build": "echo 'No build step required for CEP extension'",
+    "package": "echo 'Use ZXPSignCmd to package the extension'"
+  },
+  "keywords": [
+    "adobe",
+    "premiere-pro",
+    "cep",
+    "audio",
+    "separation",
+    "demucs",
+    "vocal-removal",
+    "stem-separation",
+    "ai",
+    "music-production",
+    "audio-processing"
+  ],
+  "author": "Cyril V",
+  "license": "MIT",
+  "engines": {
+    "premierepro": ">=25.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

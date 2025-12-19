@@ -1,0 +1,46 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Thumbnails
+Thumbs.db
+
+# Node modules (if any)
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+
+# Build outputs
+dist/
+build/
+
+# Python cache (if any)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Demucs models cache (user-specific)
+.cache/
+models/
+
+# OS generated files
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/

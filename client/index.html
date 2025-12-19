@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Separator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 id="appTitle">🎵 Audio Separator</h1>
+                    <p class="subtitle" id="appSubtitle">Séparez voix et instruments</p>
+                </div>
+                <div class="language-selector">
+                    <select id="languageSelect">
+                        <option value="en" selected>🇬🇧 English</option>
+                        <option value="fr">🇫🇷 Français</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="file-info">
+                <div class="info-card">
+                    <label>Fichier sélectionné:</label>
+                    <div id="selectedFile" class="file-name">Aucun fichier sélectionné</div>
+                </div>
+            </section>
+
+            <section class="controls">
+                <button id="selectBtn" class="btn btn-primary">
+                    📁 Sélectionner un clip audio
+                </button>
+
+                <button id="separateBtn" class="btn btn-success" disabled>
+                    ✨ Séparer l'audio
+                </button>
+                
+                <button id="cancelBtn" class="btn btn-danger" style="display: none;">
+                    ❌ Annuler
+                </button>
+
+                <div class="separator-options">
+                    <label class="section-title">Options de séparation:</label>
+                    
+                    <div class="quality-selector">
+                        <label for="separationMode">Mode de séparation:</label>
+                        <select id="separationMode">
+                            <option value="2stems" selected>2 Stems (Voix + Instrumental)</option>
+                            <option value="4stems">4 Stems (Voix + Batterie + Basse + Autres)</option>
+                        </select>
+                    </div>
+
+                    <div id="stems2Options" class="option-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="exportVocals" checked>
+                            <span>Exporter les voix</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="exportInstrumental" checked>
+                            <span>Exporter l'instrumental</span>
+                        </label>
+                    </div>
+
+                    <div id="stems4Options" class="option-group" style="display: none;">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="exportVocals4" checked>
+                            <span>Exporter les voix</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="exportDrums" checked>
+                            <span>Exporter la batterie</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="exportBass" checked>
+                            <span>Exporter la basse</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="exportOther" checked>
+                            <span>Exporter les autres</span>
+                        </label>
+                    </div>
+
+                    <div class="option-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="saveNextToOriginal" checked>
+                            <span>Enregistrer à côté du fichier d'origine</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="autoImport" checked>
+                            <span>Importer automatiquement dans le projet</span>
+                        </label>
+                    </div>
+
+                    <div class="quality-selector">
+                        <label for="processingMode">Mode de traitement:</label>
+                        <select id="processingMode">
+                            <option value="balanced" selected>⚖️ Équilibré (recommandé)</option>
+                            <option value="fast">⚡ Rapide (30-40% plus rapide)</option>
+                            <option value="quality">🏆 Qualité maximale</option>
+                        </select>
+                    </div>
+
+                    <div class="quality-selector">
+                        <label for="modelQuality">Modèle:</label>
+                        <select id="modelQuality">
+                            <option value="htdemucs">HTDemucs (rapide)</option>
+                            <option value="htdemucs_ft" selected>HTDemucs Fine-tuned (meilleur)</option>
+                            <option value="mdx_extra">MDX Extra (le plus lent)</option>
+                        </select>
+                    </div>
+
+                    <div class="output-format">
+                        <label for="outputFormat">Format de sortie:</label>
+                        <select id="outputFormat">
+                            <option value="mp3" selected>MP3 320kbps (recommandé, 10x plus petit)</option>
+                            <option value="wav">WAV (sans perte, très lourd)</option>
+                            <option value="flac">FLAC (sans perte, compressé)</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="progress-section" id="progressSection" style="display: none;">
+                <div class="progress-header">
+                    <span id="progressStatus">Traitement en cours...</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+                <div class="progress-info">
+                    <span id="timeElapsedLabel">Temps écoulé: <span id="timeElapsedValue">0s</span></span>
+                </div>
+                <div id="progressLog" class="progress-log"></div>
+            </section>
+
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <h3 id="resultsTitle">✅ Séparation terminée!</h3>
+                <div id="resultsList" class="results-list"></div>
+                <button id="importBtn" class="btn btn-primary" style="display: none;">
+                    📥 Importer dans le projet
+                </button>
+            </section>
+        </main>
+
+        <footer>
+            <p class="version">v2.1.0 - Optimisé | Powered by Demucs AI</p>
+        </footer>
+    </div>
+
+    <script src="lib/CSInterface.js"></script>
+    <script src="lib/utils.js"></script>
+    <script src="translations.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
