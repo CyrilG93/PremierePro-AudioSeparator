@@ -8,6 +8,116 @@ Professional plugin to separate audio tracks into stems (vocals, instrumental, d
 
 # English
 
+## 📋 Requirements
+
+This extension needs the following tools installed on your computer:
+
+| Tool | Why is it needed? | Installed by script? |
+|------|-------------------|---------------------|
+| **Node.js** | Required by Adobe CEP to run the extension | ❌ Manual |
+| **Python 3.11+** | Required to run Demucs AI model | ❌ Manual |
+| **Demucs** | AI audio separation model (Facebook Research) | ✅ Automatic |
+| **ffmpeg** | Better audio processing performance | ✅ Automatic (optional) |
+
+> **Important**: Node.js and Python must be installed BEFORE running the installation script.
+
+---
+
+## 🚀 Installation
+
+### macOS Installation
+
+#### Step 1: Install Prerequisites
+
+Open Terminal and install via Homebrew:
+
+```bash
+# Install Homebrew (if not already installed)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# For Apple Silicon (M1/M2/M3), add Homebrew to PATH:
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Install Node.js and Python
+brew install node python@3.11
+```
+
+#### Step 2: Run the Installer
+
+```bash
+cd /path/to/PremierePro-AudioSeparator
+chmod +x install-mac.sh
+./install-mac.sh
+```
+
+The installer will:
+- ✅ Verify Python is installed
+- ✅ Install Demucs automatically
+- ✅ Install ffmpeg (optional, recommended)
+- ✅ Copy extension to Adobe CEP folder
+- ✅ Enable debug mode
+
+#### Step 3: Restart Premiere Pro
+
+Go to **Window** > **Extensions** > **Audio Separator**
+
+---
+
+### Windows Installation
+
+#### Step 1: Install Prerequisites
+
+1. **Download and install Node.js**: https://nodejs.org/
+   - Choose the LTS version
+   - Use default installation options
+
+2. **Download and install Python 3.11**: https://www.python.org/downloads/
+   - ⚠️ **IMPORTANT**: Check **"Add Python to PATH"** during installation!
+
+#### Step 2: Run the Installer
+
+1. Right-click `install-windows.bat` → **Run as administrator**
+2. Follow the on-screen instructions
+
+The installer will:
+- ✅ Verify Node.js and Python are installed
+- ✅ Install Demucs via pip
+- ✅ Check for ffmpeg (will guide you to install if missing)
+- ✅ Copy extension to Adobe CEP folder
+- ✅ Enable debug mode in registry
+
+#### Step 3: Restart Premiere Pro
+
+Go to **Window** > **Extensions** > **Audio Separator**
+
+---
+
+### Manual Installation
+
+If the automatic installers don't work:
+
+1. **Install dependencies manually**:
+   ```bash
+   # Windows
+   pip install demucs
+   
+   # macOS
+   pip3 install demucs
+   ```
+
+2. **Copy the plugin folder** to:
+   - **macOS**: `/Library/Application Support/Adobe/CEP/extensions/`
+   - **Windows**: `C:\Program Files (x86)\Common Files\Adobe\CEP\extensions\`
+
+3. **Enable debug mode**:
+   - **macOS**: `defaults write com.adobe.CSXS.11 PlayerDebugMode 1`
+   - **Windows**: Create registry key `HKEY_CURRENT_USER\Software\Adobe\CSXS.11\PlayerDebugMode` = `1`
+
+4. **Restart Premiere Pro**
+
+---
+
 ## ✨ Features
 
 ### Separation Modes
@@ -27,142 +137,31 @@ Professional plugin to separate audio tracks into stems (vocals, instrumental, d
 - 🏷️ **Auto-naming**: Files named with suffixes _Voice, _Instrumental, _Drums, _Bass, _Other
 - 🌍 **Bilingual**: Full English/French interface
 
-### Interface
-- 🎨 **Modern Design**: Dark and elegant interface
-- 📊 **Detailed Logs**: Complete process tracking
-- ✅ **Real-time Validation**: Option verification before processing
-- ❌ **Cancel Button**: Stop processing at any time
-
-## 📋 Requirements
-
-### Required Software
-
-1. **Adobe Premiere Pro 2025** (version 25.0 or higher)
-2. **Python 3.11.8+** installed on your system
-3. **Demucs** - AI audio separation model
-
-### Installing Python and Demucs
-
-#### macOS
-
-```bash
-# Install Python (if not already installed)
-brew install python3
-
-# Install Demucs
-pip3 install demucs
-
-# Verify installation
-python3 -m demucs --help
-```
-
-#### Windows
-
-```bash
-# Download and install Python from python.org
-# Then in terminal:
-
-pip install demucs
-
-# Verify installation
-python -m demucs --help
-```
-
-## 🚀 Plugin Installation
-
-### Method 1: Automatic Installation (Recommended)
-
-#### macOS
-0. Install Python 3.11.8 (included)
-1. Run `install-mac.sh`
-2. Follow the on-screen instructions
-3. Restart Adobe Premiere Pro
-
-#### Windows
-1. Run `install-windows.bat` as Administrator
-2. Follow the on-screen instructions
-3. Restart Adobe Premiere Pro
-
-### Method 2: Manual Installation
-
-1. **Locate the CEP extensions folder**:
-
-   **macOS**:
-   ```
-   /Library/Application Support/Adobe/CEP/extensions/
-   ```
-
-   **Windows**:
-   ```
-   C:\Program Files (x86)\Common Files\Adobe\CEP\extensions\
-   ```
-
-2. **Copy the plugin folder**:
-   - Copy the `PremierePro-AudioSeparator` folder to the extensions directory
-
-3. **Enable debug mode** (if necessary):
-
-   **macOS**:
-   ```bash
-   defaults write com.adobe.CSXS.11 PlayerDebugMode 1
-   ```
-
-   **Windows** (in registry):
-   ```
-   HKEY_CURRENT_USER\Software\Adobe\CSXS.11
-   Create a PlayerDebugMode String key with value "1"
-   ```
-
-4. **Restart Adobe Premiere Pro**
+---
 
 ## 📖 Usage
 
 ### 1. Open the Panel
-
-In Adobe Premiere Pro:
-- Go to **Window** > **Extensions** > **Audio Separator**
+In Adobe Premiere Pro: **Window** > **Extensions** > **Audio Separator**
 
 ### 2. Select an Audio Clip
-
 1. In your timeline, select an audio clip you want to separate
 2. Click the **"📁 Select audio clip"** button in the panel
 
 ### 3. Configure Options
-
-- **Processing Mode**:
-  - `⚡ Fast`: 30-40% faster (quantized + segment 7)
-  - `⚖️ Balanced`: Recommended (segment 7)
-  - `🏆 Maximum Quality`: Best quality, slower
-
-- **Model Quality**:
-  - `HTDemucs`: Fast
-  - `HTDemucs Fine-tuned`: Best (recommended)
-  - `MDX Extra`: Slowest, maximum quality
-
-- **Output Format**:
-  - `MP3 320kbps`: Recommended, 10x smaller
-  - `WAV`: Lossless, very large
-  - `FLAC`: Lossless, compressed
+- **Processing Mode**: Fast, Balanced, or Maximum Quality
+- **Model Quality**: HTDemucs, HTDemucs Fine-tuned (recommended), or MDX Extra
+- **Output Format**: MP3 320kbps (recommended), WAV, or FLAC
 
 ### 4. Start Separation
-
 1. Click **"✨ Separate audio"**
-2. Wait for processing to complete (may take a few minutes depending on file length)
-3. Use the **"❌ Cancel"** button to stop processing if needed
+2. Wait for processing to complete
+3. Use the **"❌ Cancel"** button to stop if needed
 
 ### 5. Import to Project
+Once separation is complete, files are automatically imported into your project.
 
-Once separation is complete:
-- Click **"📥 Import to project"**
-- Files will be automatically imported to an "Audio Separated" bin
-
-## 🎯 Use Cases
-
-- **Remixing**: Isolate vocals to create instrumental versions
-- **Karaoke**: Create karaoke tracks by removing vocals
-- **Audio Mixing**: Adjust vocals and instruments levels separately
-- **Audio Restoration**: Clean vocal or instrumental tracks individually
-- **Content Creation**: Use separated tracks for creative editing
+---
 
 ## 🐛 Troubleshooting
 
@@ -175,24 +174,33 @@ Once separation is complete:
 
 ### Error "Python or Demucs not installed"
 
-1. Verify Python installation:
-   ```bash
-   python3 --version
-   ```
+```bash
+# macOS
+python3 --version
+python3 -m demucs --help
 
-2. Verify Demucs installation:
-   ```bash
-   python3 -m demucs --help
-   ```
+# Windows
+python --version
+python -m demucs --help
+```
 
-3. Ensure Python is in system PATH
+If Demucs is not found, reinstall:
+```bash
+# Windows
+pip install demucs
+
+# macOS
+pip3 install demucs
+```
 
 ### Separation fails
 
 1. Verify source audio file is accessible
-2. Ensure sufficient disk space
+2. Ensure sufficient disk space (at least 2GB free)
 3. Check write permissions in destination folder
 4. Consult logs in progress panel
+
+---
 
 ## 📝 License
 
@@ -204,11 +212,120 @@ This plugin uses:
 
 **Version**: 2.1.0  
 **Author**: Cyril V  
-**Last Update**: November 2025
 
 ---
 
 # Français
+
+## 📋 Prérequis
+
+Cette extension nécessite les outils suivants sur votre ordinateur :
+
+| Outil | Pourquoi c'est nécessaire ? | Installé par le script ? |
+|-------|----------------------------|--------------------------|
+| **Node.js** | Requis par Adobe CEP pour l'extension | ❌ Manuel |
+| **Python 3.11+** | Requis pour exécuter le modèle IA Demucs | ❌ Manuel |
+| **Demucs** | Modèle IA de séparation audio (Facebook Research) | ✅ Automatique |
+| **ffmpeg** | Meilleures performances de traitement audio | ✅ Automatique (optionnel) |
+
+> **Important** : Node.js et Python doivent être installés AVANT d'exécuter le script d'installation.
+
+---
+
+## 🚀 Installation
+
+### Installation macOS
+
+#### Étape 1 : Installer les prérequis
+
+Ouvrez le Terminal et installez via Homebrew :
+
+```bash
+# Installer Homebrew (si pas déjà installé)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Pour Apple Silicon (M1/M2/M3), ajouter Homebrew au PATH :
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Installer Node.js et Python
+brew install node python@3.11
+```
+
+#### Étape 2 : Exécuter l'installateur
+
+```bash
+cd /chemin/vers/PremierePro-AudioSeparator
+chmod +x install-mac.sh
+./install-mac.sh
+```
+
+L'installateur va :
+- ✅ Vérifier que Python est installé
+- ✅ Installer Demucs automatiquement
+- ✅ Installer ffmpeg (optionnel, recommandé)
+- ✅ Copier l'extension dans le dossier Adobe CEP
+- ✅ Activer le mode debug
+
+#### Étape 3 : Redémarrer Premiere Pro
+
+Allez dans **Fenêtre** > **Extensions** > **Audio Separator**
+
+---
+
+### Installation Windows
+
+#### Étape 1 : Installer les prérequis
+
+1. **Télécharger et installer Node.js** : https://nodejs.org/
+   - Choisir la version LTS
+   - Utiliser les options d'installation par défaut
+
+2. **Télécharger et installer Python 3.11** : https://www.python.org/downloads/
+   - ⚠️ **IMPORTANT** : Cochez **"Add Python to PATH"** pendant l'installation !
+
+#### Étape 2 : Exécuter l'installateur
+
+1. Clic droit sur `install-windows.bat` → **Exécuter en tant qu'administrateur**
+2. Suivez les instructions à l'écran
+
+L'installateur va :
+- ✅ Vérifier que Node.js et Python sont installés
+- ✅ Installer Demucs via pip
+- ✅ Vérifier ffmpeg (vous guidera pour l'installer si absent)
+- ✅ Copier l'extension dans le dossier Adobe CEP
+- ✅ Activer le mode debug dans le registre
+
+#### Étape 3 : Redémarrer Premiere Pro
+
+Allez dans **Fenêtre** > **Extensions** > **Audio Separator**
+
+---
+
+### Installation manuelle
+
+Si les installateurs automatiques ne fonctionnent pas :
+
+1. **Installer les dépendances manuellement** :
+   ```bash
+   # Windows
+   pip install demucs
+   
+   # macOS
+   pip3 install demucs
+   ```
+
+2. **Copier le dossier du plugin** vers :
+   - **macOS** : `/Library/Application Support/Adobe/CEP/extensions/`
+   - **Windows** : `C:\Program Files (x86)\Common Files\Adobe\CEP\extensions\`
+
+3. **Activer le mode debug** :
+   - **macOS** : `defaults write com.adobe.CSXS.11 PlayerDebugMode 1`
+   - **Windows** : Créer la clé de registre `HKEY_CURRENT_USER\Software\Adobe\CSXS.11\PlayerDebugMode` = `1`
+
+4. **Redémarrer Premiere Pro**
+
+---
 
 ## ✨ Fonctionnalités
 
@@ -229,141 +346,31 @@ This plugin uses:
 - 🏷️ **Nommage automatique** : Fichiers nommés avec suffixes _Voix, _Instrumental, _Batterie, _Basse, _Autres
 - 🌍 **Bilingue** : Interface complète Anglais/Français
 
-### Interface
-- 🎨 **Design moderne** : Interface sombre et élégante
-- 📊 **Logs détaillés** : Suivi complet du processus
-- ✅ **Validation en temps réel** : Vérification des options avant traitement
-- ❌ **Bouton d'annulation** : Arrêter le traitement à tout moment
-
-## 📋 Prérequis
-
-### Logiciels requis
-
-1. **Adobe Premiere Pro 2025** (version 25.0 ou supérieure)
-2. **Python 3.8+** installé sur votre système
-3. **Demucs** - Modèle de séparation audio IA
-
-### Installation de Python et Demucs
-
-#### macOS
-
-```bash
-# Installer Python (si pas déjà installé)
-brew install python3
-
-# Installer Demucs
-pip3 install demucs
-
-# Vérifier l'installation
-python3 -m demucs --help
-```
-
-#### Windows
-
-```bash
-# Télécharger et installer Python depuis python.org
-# Puis dans le terminal :
-
-pip install demucs
-
-# Vérifier l'installation
-python -m demucs --help
-```
-
-## 🚀 Installation du plugin
-
-### Méthode 1 : Installation automatique (Recommandée)
-
-#### macOS
-1. Exécutez `install-mac.sh`
-2. Suivez les instructions à l'écran
-3. Redémarrez Adobe Premiere Pro
-
-#### Windows
-1. Exécutez `install-windows.bat` en tant qu'Administrateur
-2. Suivez les instructions à l'écran
-3. Redémarrez Adobe Premiere Pro
-
-### Méthode 2 : Installation manuelle
-
-1. **Localisez le dossier des extensions CEP** :
-
-   **macOS** :
-   ```
-   /Library/Application Support/Adobe/CEP/extensions/
-   ```
-
-   **Windows** :
-   ```
-   C:\Program Files (x86)\Common Files\Adobe\CEP\extensions\
-   ```
-
-2. **Copiez le dossier du plugin** :
-   - Copiez le dossier `PremierePro-AudioSeparator` dans le répertoire des extensions
-
-3. **Activez le mode debug** (si nécessaire) :
-
-   **macOS** :
-   ```bash
-   defaults write com.adobe.CSXS.11 PlayerDebugMode 1
-   ```
-
-   **Windows** (dans le registre) :
-   ```
-   HKEY_CURRENT_USER\Software\Adobe\CSXS.11
-   Créer une clé PlayerDebugMode de type String avec la valeur "1"
-   ```
-
-4. **Redémarrez Adobe Premiere Pro**
+---
 
 ## 📖 Utilisation
 
 ### 1. Ouvrir le panneau
-
-Dans Adobe Premiere Pro :
-- Allez dans **Fenêtre** > **Extensions** > **Audio Separator**
+Dans Adobe Premiere Pro : **Fenêtre** > **Extensions** > **Audio Separator**
 
 ### 2. Sélectionner un clip audio
-
 1. Dans votre timeline, sélectionnez un clip audio à séparer
-2. Cliquez sur le bouton **"📁 Sélectionner un clip audio"** dans le panneau
+2. Cliquez sur le bouton **"📁 Sélectionner un clip audio"**
 
 ### 3. Configurer les options
-
-- **Mode de traitement** :
-  - `⚡ Rapide` : 30-40% plus rapide (quantized + segment 7)
-  - `⚖️ Équilibré` : Recommandé (segment 7)
-  - `🏆 Qualité maximale` : Meilleure qualité, plus lent
-
-- **Qualité du modèle** :
-  - `HTDemucs` : Rapide
-  - `HTDemucs Fine-tuned` : Meilleur (recommandé)
-  - `MDX Extra` : Plus lent, qualité maximale
-
-- **Format de sortie** :
-  - `MP3 320kbps` : Recommandé, 10x plus petit
-  - `WAV` : Sans perte, très lourd
-  - `FLAC` : Sans perte, compressé
+- **Mode de traitement** : Rapide, Équilibré ou Qualité maximale
+- **Qualité du modèle** : HTDemucs, HTDemucs Fine-tuned (recommandé) ou MDX Extra
+- **Format de sortie** : MP3 320kbps (recommandé), WAV ou FLAC
 
 ### 4. Lancer la séparation
-
 1. Cliquez sur **"✨ Séparer l'audio"**
-2. Attendez la fin du traitement (peut prendre quelques minutes selon la longueur)
-3. Utilisez le bouton **"❌ Annuler"** pour arrêter le traitement si nécessaire
+2. Attendez la fin du traitement
+3. Utilisez le bouton **"❌ Annuler"** pour arrêter si nécessaire
 
 ### 5. Importer dans le projet
+Une fois la séparation terminée, les fichiers sont automatiquement importés dans votre projet.
 
-Une fois la séparation terminée :
-- Cliquez sur **"📥 Importer dans le projet"**
-- Les fichiers seront automatiquement importés dans un chutier "Audio Séparé"
-
-## 🎯 Cas d'usage
-
-- **Remixage** : Isolez les voix pour créer des versions instrumentales
-- **Karaoké** : Créez des pistes karaoké en supprimant les voix
-- **Mixage audio** : Ajustez séparément les niveaux des voix et instruments
-- **Restauration audio** : Nettoyez les pistes vocales ou instrumentales individuellement
-- **Création de contenu** : Utilisez les pistes séparées pour vos montages créatifs
+---
 
 ## 🐛 Dépannage
 
@@ -376,24 +383,33 @@ Une fois la séparation terminée :
 
 ### Erreur "Python ou Demucs n'est pas installé"
 
-1. Vérifiez l'installation de Python :
-   ```bash
-   python3 --version
-   ```
+```bash
+# macOS
+python3 --version
+python3 -m demucs --help
 
-2. Vérifiez l'installation de Demucs :
-   ```bash
-   python3 -m demucs --help
-   ```
+# Windows
+python --version
+python -m demucs --help
+```
 
-3. Assurez-vous que Python est dans le PATH système
+Si Demucs n'est pas trouvé, réinstallez-le :
+```bash
+# Windows
+pip install demucs
+
+# macOS
+pip3 install demucs
+```
 
 ### La séparation échoue
 
 1. Vérifiez que le fichier audio source est accessible
-2. Assurez-vous d'avoir suffisamment d'espace disque
+2. Assurez-vous d'avoir suffisamment d'espace disque (au moins 2 Go libres)
 3. Vérifiez les permissions d'écriture dans le dossier de destination
 4. Consultez les logs dans le panneau de progression
+
+---
 
 ## 📝 Licence
 
@@ -404,5 +420,4 @@ Ce plugin utilise :
 ---
 
 **Version** : 2.1.0  
-**Auteur** : Cyril V  
-**Dernière mise à jour** : Novembre 2025
+**Auteur** : Cyril V
