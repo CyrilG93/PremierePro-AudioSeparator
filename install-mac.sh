@@ -26,15 +26,20 @@ print_error() {
     echo -e "${RED}✗${NC} $1"
 }
 
-# Vérifier Python
-echo "Étape 1/6 : Vérification de Python..."
-if command -v python3 &> /dev/null; then
-    PYTHON_VERSION=$(python3 --version | cut -d' ' -f2)
+# Définir Python 3.11 comme version obligatoire (Demucs n'est pas compatible avec Python 3.14+)
+PYTHON_PATH="/usr/local/bin/python3.11"
+PIP_PATH="/usr/local/bin/python3.11 -m pip"
+
+# Vérifier Python 3.11
+echo "Étape 1/6 : Vérification de Python 3.11..."
+if [ -f "$PYTHON_PATH" ]; then
+    PYTHON_VERSION=$($PYTHON_PATH --version | cut -d' ' -f2)
     print_success "Python $PYTHON_VERSION trouvé"
 else
-    print_warning "Python 3 n'est pas installé"
+    print_warning "Python 3.11 n'est pas installé à $PYTHON_PATH"
     echo ""
-    echo "Voulez-vous installer Python automatiquement via Homebrew ? (o/n)"
+    echo "Demucs requiert Python 3.11 (incompatible avec Python 3.14+)"
+    echo "Voulez-vous installer Python 3.11 automatiquement via Homebrew ? (o/n)"
     read -r INSTALL_PYTHON
     
     if [[ "$INSTALL_PYTHON" =~ ^[Oo]$ ]]; then
@@ -50,19 +55,25 @@ else
             fi
         fi
         
-        echo "Installation de Python 3..."
-        brew install python3
+        echo "Installation de Python 3.11..."
+        brew install python@3.11
         
-        if [ $? -eq 0 ]; then
-            PYTHON_VERSION=$(python3 --version | cut -d' ' -f2)
+        # Créer un lien symbolique si nécessaire
+        if [ ! -f "$PYTHON_PATH" ]; then
+            sudo ln -sf /opt/homebrew/opt/python@3.11/bin/python3.11 /usr/local/bin/python3.11 2>/dev/null || \
+            sudo ln -sf /usr/local/opt/python@3.11/bin/python3.11 /usr/local/bin/python3.11 2>/dev/null
+        fi
+        
+        if [ -f "$PYTHON_PATH" ]; then
+            PYTHON_VERSION=$($PYTHON_PATH --version | cut -d' ' -f2)
             print_success "Python $PYTHON_VERSION installé avec succès"
         else
-            print_error "Échec de l'installation de Python"
+            print_error "Échec de l'installation de Python 3.11"
             exit 1
         fi
     else
-        print_error "Python est requis pour continuer"
-        echo "Installez Python manuellement depuis https://www.python.org/downloads/"
+        print_error "Python 3.11 est requis pour continuer"
+        echo "Installez Python 3.11 manuellement depuis https://www.python.org/downloads/"
         exit 1
     fi
 fi
@@ -70,26 +81,26 @@ fi
 # Vérifier pip
 echo ""
 echo "Étape 2/6 : Vérification de pip..."
-if command -v pip3 &> /dev/null; then
-    print_success "pip3 trouvé"
+if $PYTHON_PATH -m pip --version &> /dev/null; then
+    print_success "pip trouvé pour Python 3.11"
 else
-    print_error "pip3 n'est pas installé"
+    print_error "pip n'est pas installé pour Python 3.11"
     exit 1
 fi
 
 # Installer Demucs
 echo ""
 echo "Étape 3/6 : Installation de Demucs..."
-if python3 -m demucs --help &> /dev/null; then
+if $PYTHON_PATH -m demucs --help &> /dev/null; then
     print_success "Demucs est déjà installé"
 else
     echo "Installation de Demucs en cours (cela peut prendre quelques minutes)..."
-    pip3 install demucs
+    $PIP_PATH install demucs
     if [ $? -eq 0 ]; then
         print_success "Demucs installé avec succès"
     else
         print_error "Échec de l'installation de Demucs"
-        echo "Essayez manuellement: pip3 install demucs"
+        echo "Essayez manuellement: $PIP_PATH install demucs"
         exit 1
     fi
 fi
