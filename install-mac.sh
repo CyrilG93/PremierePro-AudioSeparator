@@ -138,6 +138,7 @@ echo ""
 echo "Étape 5/6 : Installation du plugin dans Premiere Pro..."
 PLUGIN_DIR="/Library/Application Support/Adobe/CEP/extensions"
 PLUGIN_NAME="PremierePro-AudioSeparator"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Créer le dossier si nécessaire
 if [ ! -d "$PLUGIN_DIR" ]; then
@@ -145,15 +146,28 @@ if [ ! -d "$PLUGIN_DIR" ]; then
     sudo mkdir -p "$PLUGIN_DIR"
 fi
 
-# Copier le plugin
-echo "Copie du plugin..."
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-sudo cp -r "$SCRIPT_DIR" "$PLUGIN_DIR/$PLUGIN_NAME"
+# Supprimer l'ancienne version si elle existe
+if [ -d "$PLUGIN_DIR/$PLUGIN_NAME" ]; then
+    echo "Suppression de l'ancienne version..."
+    sudo rm -rf "$PLUGIN_DIR/$PLUGIN_NAME"
+fi
 
-if [ $? -eq 0 ]; then
-    print_success "Plugin copié avec succès"
+# Copier uniquement les fichiers nécessaires (pas .git, pas install scripts, pas README)
+echo "Copie des fichiers du plugin..."
+sudo mkdir -p "$PLUGIN_DIR/$PLUGIN_NAME"
+sudo cp -r "$SCRIPT_DIR/client" "$PLUGIN_DIR/$PLUGIN_NAME/"
+sudo cp -r "$SCRIPT_DIR/host" "$PLUGIN_DIR/$PLUGIN_NAME/"
+sudo cp -r "$SCRIPT_DIR/CSXS" "$PLUGIN_DIR/$PLUGIN_NAME/"
+sudo cp "$SCRIPT_DIR/.debug" "$PLUGIN_DIR/$PLUGIN_NAME/" 2>/dev/null || true
+
+# Corriger les permissions
+sudo chmod -R 755 "$PLUGIN_DIR/$PLUGIN_NAME"
+sudo chown -R $(whoami):staff "$PLUGIN_DIR/$PLUGIN_NAME"
+
+if [ -d "$PLUGIN_DIR/$PLUGIN_NAME/client" ]; then
+    print_success "Plugin installé avec succès"
 else
-    print_error "Échec de la copie du plugin"
+    print_error "Échec de l'installation du plugin"
     exit 1
 fi
 
