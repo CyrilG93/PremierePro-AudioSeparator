@@ -9,29 +9,29 @@
 /**
  * Find bin by name
  */
-function findBinByName(item, binName) {
+function AudioSeparator_findBinByName(item, binName) {
     // Check if this item is a bin with the matching name
     if (item.type === 2 && item.name === binName) { // ProjectItemType.BIN
         return item;
     }
-    
+
     // Search in children
     if (item.children && item.children.numItems > 0) {
         for (var i = 0; i < item.children.numItems; i++) {
-            var found = findBinByName(item.children[i], binName);
+            var found = AudioSeparator_findBinByName(item.children[i], binName);
             if (found) {
                 return found;
             }
         }
     }
-    
+
     return null;
 }
 
 /**
  * Find project item by media path
  */
-function findProjectItemByPath(item, mediaPath) {
+function AudioSeparator_findProjectItemByPath(item, mediaPath) {
     // Check if this item matches
     try {
         if (item.type === 1) { // ProjectItemType.CLIP
@@ -43,24 +43,24 @@ function findProjectItemByPath(item, mediaPath) {
     } catch (e) {
         // Item doesn't have getMediaPath, skip
     }
-    
+
     // Search in children
     if (item.children && item.children.numItems > 0) {
         for (var i = 0; i < item.children.numItems; i++) {
-            var found = findProjectItemByPath(item.children[i], mediaPath);
+            var found = AudioSeparator_findProjectItemByPath(item.children[i], mediaPath);
             if (found) {
                 return found;
             }
         }
     }
-    
+
     return null;
 }
 
 /**
  * Check if Python and Demucs are installed
  */
-function checkPythonEnvironment() {
+function AudioSeparator_checkPythonEnvironment() {
     try {
         // ExtendScript ne peut pas facilement vérifier les commandes système
         // On retourne simplement true pour permettre l'utilisation
@@ -81,7 +81,7 @@ function checkPythonEnvironment() {
 /**
  * Get selected audio clip from timeline
  */
-function getSelectedAudioClip() {
+function AudioSeparator_getSelectedAudioClip() {
     try {
         var project = app.project;
         if (!project) {
@@ -106,7 +106,7 @@ function getSelectedAudioClip() {
         for (var i = 0; i < audioTracks.numTracks; i++) {
             var track = audioTracks[i];
             var clips = track.clips;
-            
+
             for (var j = 0; j < clips.numItems; j++) {
                 var clip = clips[j];
                 if (clip.isSelected()) {
@@ -127,23 +127,23 @@ function getSelectedAudioClip() {
         // Get clip information
         var projectItem = selectedClip.projectItem;
         var mediaPath = projectItem.getMediaPath();
-        
+
         // Get parent bin information - search in project panel
         var parentBinName = "Root";
-        
+
         // Search for the actual project item in the project panel
-        var actualProjectItem = findProjectItemByPath(app.project.rootItem, mediaPath);
+        var actualProjectItem = AudioSeparator_findProjectItemByPath(app.project.rootItem, mediaPath);
         if (actualProjectItem) {
             // Try to get parent directly
             if (actualProjectItem.parent) {
                 parentBinName = actualProjectItem.parent.name;
-            } 
+            }
             // If parent is null, use treePath to find the parent bin
             else if (actualProjectItem.treePath) {
                 var pathParts = actualProjectItem.treePath.split("\\");
                 if (pathParts.length >= 3) {
                     var binName = pathParts[pathParts.length - 2];
-                    var parentBin = findBinByName(app.project.rootItem, binName);
+                    var parentBin = AudioSeparator_findBinByName(app.project.rootItem, binName);
                     if (parentBin) {
                         parentBinName = parentBin.name;
                     }
@@ -172,10 +172,10 @@ function getSelectedAudioClip() {
 /**
  * Separate audio using Demucs
  */
-function separateAudio(params) {
+function AudioSeparator_separateAudio(params) {
     try {
         var paramsObj = JSON.parse(params);
-        
+
         // Create output directory
         var outputDir = Folder.selectDialog("Sélectionnez le dossier de sortie");
         if (!outputDir) {
@@ -186,14 +186,14 @@ function separateAudio(params) {
         }
 
         var outputPath = outputDir.fsName;
-        
+
         // Get script path - assuming it's in the extension folder
         var scriptPath = new File($.fileName).parent.parent.fsName + '/scripts/audio_separator.py';
-        
+
         // Build parameters
         var model = paramsObj.model || 'htdemucs_ft';
         var inputPath = paramsObj.clipPath;
-        
+
         // Create a command file that will be executed
         var cmdFilePath = outputPath + '/demucs_command.sh';
         var cmdFile = new File(cmdFilePath);
@@ -203,7 +203,7 @@ function separateAudio(params) {
         cmdFile.writeln('python3.11 -m demucs --two-stems=vocals -n ' + model + ' --out "' + outputPath + '" "' + inputPath + '" > demucs_output.log 2>&1');
         cmdFile.writeln('echo $? > demucs_exit_code.txt');
         cmdFile.close();
-        
+
         // Return instruction to user to run the command manually
         return JSON.stringify({
             success: false,
@@ -226,11 +226,11 @@ function separateAudio(params) {
 /**
  * Import separated files into Premiere Pro project
  */
-function importFiles(filesJson, originalMediaPath) {
+function AudioSeparator_importFiles(filesJson, originalMediaPath) {
     try {
         var files = JSON.parse(filesJson);
         var project = app.project;
-        
+
         if (!project) {
             return JSON.stringify({
                 success: false,
@@ -239,43 +239,43 @@ function importFiles(filesJson, originalMediaPath) {
         }
 
         var originalBin = null;
-        
+
         // Try to find the original project item by its media path
         if (originalMediaPath && originalMediaPath !== "null" && originalMediaPath !== "undefined") {
-            var originalItem = findProjectItemByPath(project.rootItem, originalMediaPath);
-            
+            var originalItem = AudioSeparator_findProjectItemByPath(project.rootItem, originalMediaPath);
+
             if (originalItem) {
                 // Try to get parent directly
                 if (originalItem.parent) {
                     originalBin = originalItem.parent;
-                } 
+                }
                 // If parent is null, use treePath to find the parent bin
                 else if (originalItem.treePath) {
                     // Parse treePath: \ProjectName\BinName\FileName
                     var pathParts = originalItem.treePath.split("\\");
-                    
+
                     // If there are at least 3 parts (project, bin, file), get the bin name
                     if (pathParts.length >= 3) {
                         var binName = pathParts[pathParts.length - 2]; // Second to last is the bin
-                        
+
                         // Search for this bin in the project
-                        originalBin = findBinByName(project.rootItem, binName);
+                        originalBin = AudioSeparator_findBinByName(project.rootItem, binName);
                     }
                 }
             }
         }
-        
+
         // If no bin found, use root
         if (!originalBin) {
             originalBin = project.rootItem;
         }
-        
+
         // Import each file into the same bin as the original
         var importedItems = [];
         for (var i = 0; i < files.length; i++) {
             var file = files[i];
             var imported = project.importFiles([file.path], true, originalBin, false);
-            
+
             if (imported) {
                 importedItems.push({
                     name: file.name,
