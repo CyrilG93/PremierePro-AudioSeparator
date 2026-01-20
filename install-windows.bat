@@ -1,8 +1,14 @@
 @echo off
+setlocal enabledelayedexpansion
+chcp 65001 >nul 2>&1
 :: Audio Separator - Windows Installation Script
-:: Version 2.1.0
+:: Version 2.2.0
 
 title Audio Separator - Installation
+
+:: Create log file for debugging
+set "LOGFILE=%~dp0install_log.txt"
+echo Installation started at %date% %time% > "%LOGFILE%"
 
 echo.
 echo ========================================
@@ -61,23 +67,75 @@ if %errorlevel% EQU 0 (
 :: Step 3: Install Demucs
 echo.
 echo Etape 3/5 : Installation de Demucs...
-python -m demucs --help >nul 2>&1
-if %errorlevel% EQU 0 (
-    echo [OK] Demucs est deja installe
-    echo Mise a jour vers la derniere version...
-    python -m pip install --upgrade demucs --quiet
+echo.
+
+:: First upgrade pip to avoid issues (skip --user for pip itself, it can crash)
+echo [3.1] Mise a jour de pip...
+python -m pip install --upgrade pip --quiet 2>>"%LOGFILE%"
+if !errorlevel! NEQ 0 (
+    echo [AVERTISSEMENT] Impossible de mettre a jour pip, on continue...
+    echo [WARN] pip upgrade failed >> "%LOGFILE%"
 ) else (
-    echo Installation de Demucs en cours (peut prendre quelques minutes)...
-    python -m pip install demucs
-    if %errorlevel% EQU 0 (
-        echo [OK] Demucs installe avec succes
-    ) else (
-        echo [ERREUR] Echec de l'installation de Demucs
-        echo Essayez manuellement: pip install demucs
-        pause
-        exit /b 1
-    )
+    echo [OK] pip mis a jour
 )
+
+:: Check if Demucs is already installed (use pip show, safer than running module)
+echo [3.2] Verification de Demucs...
+python -m pip show demucs >nul 2>&1
+if !errorlevel! EQU 0 goto :demucs_found
+
+:: Demucs not found - install PyTorch first
+echo [3.3] Installation de PyTorch (cela peut prendre plusieurs minutes)...
+echo      Telechargement d environ 2 Go de donnees...
+echo.
+
+:: Install torch first separately to avoid timeout issues
+echo [LOG] Installing PyTorch with CUDA... >> "%LOGFILE%"
+python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu118 2>>"%LOGFILE%"
+if !errorlevel! EQU 0 goto :torch_ok
+
+echo [AVERTISSEMENT] Installation GPU echouee, essai version CPU...
+echo [LOG] Trying CPU version... >> "%LOGFILE%"
+python -m pip install torch torchaudio 2>>"%LOGFILE%"
+if !errorlevel! NEQ 0 (
+    echo [ERREUR] Echec de installation de PyTorch
+    echo.
+    echo Solutions possibles:
+    echo 1. Desactivez temporairement Windows Defender
+    echo 2. Executez: pip install torch torchaudio
+    echo.
+    pause
+    exit /b 1
+)
+
+:torch_ok
+echo [OK] PyTorch installe
+
+echo.
+echo [3.4] Installation de Demucs...
+echo [LOG] Installing demucs... >> "%LOGFILE%"
+python -m pip install demucs 2>>"%LOGFILE%"
+if !errorlevel! NEQ 0 (
+    echo [ERREUR] Echec de installation de Demucs
+    echo.
+    echo Solutions possibles:
+    echo 1. Desactivez temporairement Windows Defender
+    echo 2. Executez manuellement: pip install demucs
+    echo 3. Verifiez que Python 3.8-3.11 est installe
+    echo.
+    pause
+    exit /b 1
+)
+echo [OK] Demucs installe avec succes
+goto :step4
+
+:demucs_found
+echo [OK] Demucs est deja installe
+echo Mise a jour vers la derniere version...
+python -m pip install --upgrade demucs --quiet 2>>"%LOGFILE%"
+echo [OK] Demucs mis a jour
+
+:step4
 
 :: Step 4: Check ffmpeg
 echo.
