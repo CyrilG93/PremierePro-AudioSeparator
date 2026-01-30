@@ -291,6 +291,7 @@
     function selectAudioClip() {
         Utils.log('Selecting audio clip...');
         csInterface.evalScript('AudioSeparator_getSelectedAudioClip()', function (result) {
+            console.log("Raw result from host:", result); // DEBUG
             try {
                 const clipData = JSON.parse(result);
                 if (clipData.success) {

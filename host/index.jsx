@@ -71,10 +71,8 @@ function AudioSeparator_checkPythonEnvironment() {
             note: "Verification skipped - ExtendScript limitation"
         });
     } catch (e) {
-        return JSON.stringify({
-            success: false,
-            error: e.toString()
-        });
+        var errStr = e.toString().replace(/"/g, '\\"');
+        return '{"success": false, "error": "' + errStr + '"}';
     }
 }
 
@@ -126,29 +124,41 @@ function AudioSeparator_getSelectedAudioClip() {
 
         // Get clip information
         var projectItem = selectedClip.projectItem;
-        var mediaPath = projectItem.getMediaPath();
+        var mediaPath = "";
+        try {
+            mediaPath = projectItem.getMediaPath();
+        } catch (e) {
+            mediaPath = "Unknown (Synthetic)";
+        }
 
         // Get parent bin information - search in project panel
         var parentBinName = "Root";
 
         // Search for the actual project item in the project panel
-        var actualProjectItem = AudioSeparator_findProjectItemByPath(app.project.rootItem, mediaPath);
-        if (actualProjectItem) {
-            // Try to get parent directly
-            if (actualProjectItem.parent) {
-                parentBinName = actualProjectItem.parent.name;
-            }
-            // If parent is null, use treePath to find the parent bin
-            else if (actualProjectItem.treePath) {
-                var pathParts = actualProjectItem.treePath.split("\\");
-                if (pathParts.length >= 3) {
-                    var binName = pathParts[pathParts.length - 2];
-                    var parentBin = AudioSeparator_findBinByName(app.project.rootItem, binName);
-                    if (parentBin) {
-                        parentBinName = parentBin.name;
+        // Use a try-catch for the recursive search to avoid crashes
+        try {
+            if (mediaPath && mediaPath !== "Unknown (Synthetic)") {
+                var actualProjectItem = AudioSeparator_findProjectItemByPath(app.project.rootItem, mediaPath);
+                if (actualProjectItem) {
+                    // Try to get parent directly
+                    if (actualProjectItem.parent) {
+                        parentBinName = actualProjectItem.parent.name;
+                    }
+                    // If parent is null, use treePath to find the parent bin
+                    else if (actualProjectItem.treePath) {
+                        var pathParts = actualProjectItem.treePath.split("\\");
+                        if (pathParts.length >= 3) {
+                            var binName = pathParts[pathParts.length - 2];
+                            var parentBin = AudioSeparator_findBinByName(app.project.rootItem, binName);
+                            if (parentBin) {
+                                parentBinName = parentBin.name;
+                            }
+                        }
                     }
                 }
             }
+        } catch (e) {
+            // Ignore bin search errors
         }
 
         return JSON.stringify({
@@ -162,10 +172,9 @@ function AudioSeparator_getSelectedAudioClip() {
         });
 
     } catch (e) {
-        return JSON.stringify({
-            success: false,
-            error: e.toString()
-        });
+        // Fallback manual JSON creation to ensure we always return something
+        var errStr = e.toString().replace(/"/g, '\\"');
+        return '{"success": false, "error": "' + errStr + '"}';
     }
 }
 
@@ -216,10 +225,8 @@ function AudioSeparator_separateAudio(params) {
         });
 
     } catch (e) {
-        return JSON.stringify({
-            success: false,
-            error: e.toString()
-        });
+        var errStr = e.toString().replace(/"/g, '\\"');
+        return '{"success": false, "error": "' + errStr + '"}';
     }
 }
 
@@ -242,27 +249,29 @@ function AudioSeparator_importFiles(filesJson, originalMediaPath) {
 
         // Try to find the original project item by its media path
         if (originalMediaPath && originalMediaPath !== "null" && originalMediaPath !== "undefined") {
-            var originalItem = AudioSeparator_findProjectItemByPath(project.rootItem, originalMediaPath);
+            try {
+                var originalItem = AudioSeparator_findProjectItemByPath(project.rootItem, originalMediaPath);
 
-            if (originalItem) {
-                // Try to get parent directly
-                if (originalItem.parent) {
-                    originalBin = originalItem.parent;
-                }
-                // If parent is null, use treePath to find the parent bin
-                else if (originalItem.treePath) {
-                    // Parse treePath: \ProjectName\BinName\FileName
-                    var pathParts = originalItem.treePath.split("\\");
+                if (originalItem) {
+                    // Try to get parent directly
+                    if (originalItem.parent) {
+                        originalBin = originalItem.parent;
+                    }
+                    // If parent is null, use treePath to find the parent bin
+                    else if (originalItem.treePath) {
+                        // Parse treePath: \ProjectName\BinName\FileName
+                        var pathParts = originalItem.treePath.split("\\");
 
-                    // If there are at least 3 parts (project, bin, file), get the bin name
-                    if (pathParts.length >= 3) {
-                        var binName = pathParts[pathParts.length - 2]; // Second to last is the bin
+                        // If there are at least 3 parts (project, bin, file), get the bin name
+                        if (pathParts.length >= 3) {
+                            var binName = pathParts[pathParts.length - 2]; // Second to last is the bin
 
-                        // Search for this bin in the project
-                        originalBin = AudioSeparator_findBinByName(project.rootItem, binName);
+                            // Search for this bin in the project
+                            originalBin = AudioSeparator_findBinByName(project.rootItem, binName);
+                        }
                     }
                 }
-            }
+            } catch (e) { }
         }
 
         // If no bin found, use root
@@ -292,9 +301,7 @@ function AudioSeparator_importFiles(filesJson, originalMediaPath) {
         });
 
     } catch (e) {
-        return JSON.stringify({
-            success: false,
-            error: e.toString()
-        });
+        var errStr = e.toString().replace(/"/g, '\\"');
+        return '{"success": false, "error": "' + errStr + '"}';
     }
 }
