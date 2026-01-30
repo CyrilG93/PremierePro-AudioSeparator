@@ -11,23 +11,41 @@ echo ========================================
 echo.
 
 REM Request Administrator Privileges
+echo [DEBUG] Checking/Requesting Admin privileges...
 NET FILE 1>NUL 2>NUL
-if '%errorlevel%' == '0' ( goto :admin ) else ( goto :uac )
+if '%errorlevel%' == '0' ( 
+    echo [DEBUG] We have Admin privileges. Going to :admin
+    goto :admin 
+) else ( 
+    echo [DEBUG] No Admin privileges. Triggering UAC...
+    pause
+    goto :uac 
+)
 
 :uac
 echo Requesting administrator privileges...
 powershell -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
+echo [DEBUG] UAC Request Sent. Old window closing.
 exit /b
 
 :admin
+echo [DEBUG] Entered :admin block.
+pause
+
 REM Get script directory
 pushd "%~dp0"
 set "SOURCE_DIR=%~dp0"
 REM Remove trailing backslash if exists
 if "%SOURCE_DIR:~-1%"=="\" set "SOURCE_DIR=%SOURCE_DIR:~0,-1%"
 
+echo [DEBUG] Source Dir: %SOURCE_DIR%
+pause
+
 set "EXTENSION_PATH=%ProgramFiles(x86)%\Common Files\Adobe\CEP\extensions\PremierePro-AudioSeparator"
 set "CONFIG_FILE=%EXTENSION_PATH%\config.json"
+
+echo [DEBUG] Extension Path set.
+pause
 
 echo Source directory: %SOURCE_DIR%
 echo Target directory: %EXTENSION_PATH%
@@ -41,7 +59,8 @@ echo.
 set "PYTHON_PATH="
 
 REM Check common installation paths for Python 3.11 specifically
-REM We check specific 3.11 folders to ensure compatibility with Demucs
+echo [DEBUG] Starting Python loop check...
+pause
 
 for %%p in (
     "C:\Python311\python.exe"
@@ -49,11 +68,15 @@ for %%p in (
     "C:\Program Files\Python311\python.exe"
     "C:\Program Files (x86)\Python311\python.exe"
 ) do (
+    echo [DEBUG] Checking: %%p
     if exist %%p (
+        echo [DEBUG] Found at: %%~p
         set "PYTHON_PATH=%%~p"
         goto :found_python
     )
 )
+echo [DEBUG] Loop finished, Python not found yet.
+pause
 
 REM Try finding py launcher with 3.11
 py -3.11 --version >nul 2>&1
