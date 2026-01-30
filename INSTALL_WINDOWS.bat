@@ -1,6 +1,8 @@
 REM Audio Separator for Premiere Pro - Windows Installer
 REM Version 2.3.0
 
+pause
+
 echo.
 echo ========================================
 echo Audio Separator for Premiere Pro
