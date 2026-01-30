@@ -528,7 +528,10 @@
 
         // Use spawn instead of exec for better real-time output
         const spawnEnv = {
-            ...process.env
+            ...process.env,
+            // Force UTF-8 encoding for Python to handle Unicode filenames on Windows
+            PYTHONIOENCODING: 'utf-8',
+            PYTHONUTF8: '1'
         };
 
         // Add FFmpeg to PATH if configured
