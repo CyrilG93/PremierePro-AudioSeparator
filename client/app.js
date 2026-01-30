@@ -290,6 +290,7 @@
      */
     function selectAudioClip() {
         Utils.log('Selecting audio clip...');
+
         csInterface.evalScript('AudioSeparator_getSelectedAudioClip()', function (result) {
             console.log("Raw result from host:", result); // DEBUG
             try {
@@ -440,8 +441,6 @@
 
         // Use Node.js to execute the command
         const { spawn, execSync } = require('child_process');
-        const fs = require('fs');
-        const path = require('path');
         const os = require('os');
 
         const model = elements.modelQuality.value;
