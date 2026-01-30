@@ -15,11 +15,11 @@ if '%errorlevel%' == '0' ( goto :admin ) else ( goto :uac )
 
 :uac
 echo Requesting administrator privileges...
-powershell Start-Process -FilePath "%0" -ArgumentList "%cd%" -Verb RunAs
+powershell Start-Process -FilePath "%0" -Verb RunAs
 exit /b
 
 :admin
-REM Get script directory (handle if run as admin from diff path)
+REM Get script directory
 pushd "%~dp0"
 set "SOURCE_DIR=%~dp0"
 REM Remove trailing backslash if exists
@@ -42,11 +42,14 @@ set "PYTHON_PATH="
 REM Check common installation paths for Python 3.11 specifically
 REM We check specific 3.11 folders to ensure compatibility with Demucs
 
-set "CHECK_PATHS=C:\Python311\python.exe;%LOCALAPPDATA%\Programs\Python\Python311\python.exe;C:\Program Files\Python311\python.exe;C:\Program Files (x86)\Python311\python.exe"
-
-for %%p in (%CHECK_PATHS%) do (
-    if exist "%%p" (
-        set "PYTHON_PATH=%%p"
+for %%p in (
+    "C:\Python311\python.exe"
+    "%LOCALAPPDATA%\Programs\Python\Python311\python.exe"
+    "C:\Program Files\Python311\python.exe"
+    "C:\Program Files (x86)\Python311\python.exe"
+) do (
+    if exist %%p (
+        set "PYTHON_PATH=%%~p"
         goto :found_python
     )
 )
