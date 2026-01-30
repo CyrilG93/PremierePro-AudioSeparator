@@ -1,6 +1,6 @@
 @echo off
-:: Audio Separator for Premiere Pro - Windows Installer
-:: Version 2.3.0
+REM Audio Separator for Premiere Pro - Windows Installer
+REM Version 2.3.0
 
 echo.
 echo ========================================
@@ -9,7 +9,7 @@ echo Installation Package v2.3.0 - Windows
 echo ========================================
 echo.
 
-:: Request Administrator Privileges
+REM Request Administrator Privileges
 NET FILE 1>NUL 2>NUL
 if '%errorlevel%' == '0' ( goto :admin ) else ( goto :uac )
 
@@ -19,10 +19,10 @@ powershell Start-Process -FilePath "%0" -ArgumentList "%cd%" -Verb RunAs
 exit /b
 
 :admin
-:: Get script directory (handle if run as admin from diff path)
+REM Get script directory (handle if run as admin from diff path)
 pushd "%~dp0"
 set "SOURCE_DIR=%~dp0"
-:: Remove trailing backslash if exists
+REM Remove trailing backslash if exists
 if "%SOURCE_DIR:~-1%"=="\" set "SOURCE_DIR=%SOURCE_DIR:~0,-1%"
 
 set "EXTENSION_PATH=%ProgramFiles(x86)%\Common Files\Adobe\CEP\extensions\PremierePro-AudioSeparator"
@@ -39,8 +39,8 @@ echo.
 
 set "PYTHON_PATH="
 
-:: Check common installation paths for Python 3.11 specifically
-:: We check specific 3.11 folders to ensure compatibility with Demucs
+REM Check common installation paths for Python 3.11 specifically
+REM We check specific 3.11 folders to ensure compatibility with Demucs
 
 set "CHECK_PATHS=C:\Python311\python.exe;%LOCALAPPDATA%\Programs\Python\Python311\python.exe;C:\Program Files\Python311\python.exe;C:\Program Files (x86)\Python311\python.exe"
 
@@ -51,14 +51,14 @@ for %%p in (%CHECK_PATHS%) do (
     )
 )
 
-:: Try finding py launcher with 3.11
+REM Try finding py launcher with 3.11
 py -3.11 --version >nul 2>&1
 if %errorlevel% equ 0 (
     for /f "tokens=*" %%i in ('py -3.11 -c "import sys; print(sys.executable)"') do set "PYTHON_PATH=%%i"
     goto :found_python
 )
 
-:: If still not found, check if plain 'python' is 3.11
+REM If still not found, check if plain 'python' is 3.11
 python --version 2>&1 | findstr "3.11" >nul
 if %errorlevel% equ 0 (
     for /f "tokens=*" %%i in ('where python') do (
@@ -97,7 +97,7 @@ if %errorlevel% equ 0 (
     for /f "tokens=*" %%i in ('where ffmpeg') do set "FFMPEG_PATH=%%i"
     echo [OK] FFmpeg found in PATH.
 ) else (
-    :: Check common paths
+    REM Check common paths
     if exist "C:\ffmpeg\bin\ffmpeg.exe" set "FFMPEG_PATH=C:\ffmpeg\bin\ffmpeg.exe"
     if exist "C:\Program Files\ffmpeg\bin\ffmpeg.exe" set "FFMPEG_PATH=C:\Program Files\ffmpeg\bin\ffmpeg.exe"
 )
@@ -167,7 +167,7 @@ echo.
 
 echo Generating config.json...
 
-:: Escape backslashes for JSON
+REM Escape backslashes for JSON
 set "JSON_PYTHON=%PYTHON_PATH:\=\\%"
 set "JSON_FFMPEG=%FFMPEG_PATH:\=\\%"
 
