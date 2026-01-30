@@ -401,6 +401,29 @@
      * Start the separation process
      */
     function startSeparation(outputPath) {
+        // Load configuration
+        const path = require('path');
+        const fs = require('fs');
+        let config = {};
+
+        try {
+            const configPath = path.join(__dirname, 'config.json');
+            if (fs.existsSync(configPath)) {
+                config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+            } else {
+                throw new Error('Config file not found');
+            }
+        } catch (e) {
+            Utils.showNotification('Configuration manquante. Veuillez réinstaller le plugin.', 'error');
+            addLogMessage('❌ Erreur: config.json introuvable. Veuillez exécuter le script d\'installation.');
+            return;
+        }
+
+        if (!config.pythonPath) {
+            Utils.showNotification('Chemin Python non configuré.', 'error');
+            return;
+        }
+
         updateProgress(5, t('executingDemucs'));
 
         // Start timer
@@ -426,9 +449,9 @@
         const processingMode = elements.processingMode.value;
         const outputFormat = elements.outputFormat.value;
 
-        // macOS: use full path
-        const pythonPath = '/usr/local/bin/python3.11';
-        const certPath = '/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem';
+        // Use configured paths
+        const pythonPath = config.pythonPath;
+        const ffmpegPath = config.ffmpegPath;
 
         addLogMessage(`🐍 Python: ${pythonPath}`);
 
@@ -493,12 +516,14 @@
 
         // Use spawn instead of exec for better real-time output
         const spawnEnv = {
-            ...process.env,
-            PATH: '/opt/homebrew/bin:/usr/local/bin:' + (process.env.PATH || '')
+            ...process.env
         };
 
-        if (certPath) {
-            spawnEnv.SSL_CERT_FILE = certPath;
+        // Add FFmpeg to PATH if configured
+        if (ffmpegPath) {
+            const separator = os.platform() === 'win32' ? ';' : ':';
+            const ffmpegDir = path.dirname(ffmpegPath);
+            spawnEnv.PATH = ffmpegDir + separator + (spawnEnv.PATH || '');
         }
 
         currentProcess = spawn(pythonPath, args, { env: spawnEnv });
