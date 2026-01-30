@@ -48,21 +48,26 @@ set "CONFIG_FILE=%EXTENSION_PATH%\config.json"
 echo [DEBUG 7] CONFIG_FILE set.
 pause
 
+echo [DEBUG 8] About to echo Source directory...
 echo Source directory: %SOURCE_DIR%
+echo [DEBUG 9] About to echo Target directory...
 echo Target directory: %EXTENSION_PATH%
 echo.
+
+echo [DEBUG 10] Starting Python check section...
+pause
 
 echo ========================================
 echo Step 1/5: Checking Python 3.11
 echo ========================================
-REM Check common installation paths for Python 3.11 specifically
-REM We check specific 3.11 folders to ensure compatibility with Demucs
 
+echo [DEBUG 11] Checking C:\Python311...
 REM Check Path 1
 if exist "C:\Python311\python.exe" (
     set "PYTHON_PATH=C:\Python311\python.exe"
     goto :found_python
 )
+echo [DEBUG 12] Checking LOCALAPPDATA...
 
 REM Check Path 2
 if exist "%LOCALAPPDATA%\Programs\Python\Python311\python.exe" (
