@@ -1,3 +1,4 @@
+@echo off
 REM Audio Separator for Premiere Pro - Windows Installer
 REM Version 2.3.0
 
@@ -17,7 +18,14 @@ if '%errorlevel%' == '0' ( goto :admin ) else ( goto :uac )
 :uac
 echo Requesting administrator privileges...
 powershell -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
+echo [DEBUG] UAC command sent. If window closes now, check if new window appeared.
+pause
 exit /b
+
+:22: REM Get script directory
+:admin
+echo [DEBUG] Admin privileges confirmed. Enetering admin block...
+pause
 
 REM Get script directory
 pushd "%~dp0"
