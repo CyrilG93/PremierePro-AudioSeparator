@@ -22,7 +22,6 @@ echo [DEBUG] UAC command sent. If window closes now, check if new window appeare
 pause
 exit /b
 
-:22: REM Get script directory
 :admin
 echo [DEBUG] Admin privileges confirmed. Enetering admin block...
 pause
