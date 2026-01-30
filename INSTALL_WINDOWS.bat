@@ -23,17 +23,30 @@ pause
 exit /b
 
 :admin
-echo [DEBUG] Admin privileges confirmed. Enetering admin block...
+echo [DEBUG 1] Admin privileges confirmed.
 pause
 
-REM Get script directory
+echo [DEBUG 2] About to pushd...
 pushd "%~dp0"
+echo [DEBUG 3] pushd done.
+pause
+
 set "SOURCE_DIR=%~dp0"
+echo [DEBUG 4] SOURCE_DIR set to: %SOURCE_DIR%
+pause
+
 REM Remove trailing backslash if exists
 if "%SOURCE_DIR:~-1%"=="\" set "SOURCE_DIR=%SOURCE_DIR:~0,-1%"
+echo [DEBUG 5] Trailing slash removed. SOURCE_DIR: %SOURCE_DIR%
+pause
 
 set "EXTENSION_PATH=%ProgramFiles(x86)%\Common Files\Adobe\CEP\extensions\PremierePro-AudioSeparator"
+echo [DEBUG 6] EXTENSION_PATH set.
+pause
+
 set "CONFIG_FILE=%EXTENSION_PATH%\config.json"
+echo [DEBUG 7] CONFIG_FILE set.
+pause
 
 echo Source directory: %SOURCE_DIR%
 echo Target directory: %EXTENSION_PATH%
