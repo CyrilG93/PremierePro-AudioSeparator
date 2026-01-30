@@ -2,8 +2,6 @@
 REM Audio Separator for Premiere Pro - Windows Installer
 REM Version 2.3.0
 
-pause
-
 echo.
 echo ========================================
 echo Audio Separator for Premiere Pro
@@ -18,98 +16,46 @@ if '%errorlevel%' == '0' ( goto :admin ) else ( goto :uac )
 :uac
 echo Requesting administrator privileges...
 powershell -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
-echo [DEBUG] UAC command sent. If window closes now, check if new window appeared.
-pause
 exit /b
 
 :admin
-echo [DEBUG 1] Admin privileges confirmed.
-pause
-
-echo [DEBUG 2] About to pushd...
 pushd "%~dp0"
-echo [DEBUG 3] pushd done.
-pause
-
 set "SOURCE_DIR=%~dp0"
-echo [DEBUG 4] SOURCE_DIR set to: %SOURCE_DIR%
-pause
 
 REM Remove trailing backslash if exists
 if "%SOURCE_DIR:~-1%"=="\" set "SOURCE_DIR=%SOURCE_DIR:~0,-1%"
-echo [DEBUG 5] Trailing slash removed. SOURCE_DIR: %SOURCE_DIR%
-pause
 
 set "EXTENSION_PATH=%ProgramFiles(x86)%\Common Files\Adobe\CEP\extensions\PremierePro-AudioSeparator"
-echo [DEBUG 6] EXTENSION_PATH set.
-pause
-
 set "CONFIG_FILE=%EXTENSION_PATH%\config.json"
-echo [DEBUG 7] CONFIG_FILE set.
-pause
 
-echo [DEBUG 8] About to echo Source directory...
 echo Source directory: %SOURCE_DIR%
-echo [DEBUG 9] About to echo Target directory...
 echo Target directory: %EXTENSION_PATH%
 echo.
 
-echo [DEBUG 10] Starting Python check section...
-pause
-
-echo [DEBUG 10a] About to echo header...
 echo ========================================
-echo [DEBUG 10b] Header line 1 done.
 echo Step 1/5: Checking Python 3.11
-echo [DEBUG 10c] Title done.
 echo ========================================
-echo [DEBUG 10d] Header complete.
-pause
+echo.
 
-echo [DEBUG 10e] About to echo DEBUG 11 message...
-echo [DEBUG 11] Checking C:\Python311...
-echo [DEBUG 10f] About to run first if-exist...
-REM Check Path 1
-if exist "C:\Python311\python.exe" (
-    set "PYTHON_PATH=C:\Python311\python.exe"
-    goto :found_python
-)
-echo [DEBUG 10g] First if-exist done. Now LOCALAPPDATA...
-echo [DEBUG 12] Checking LOCALAPPDATA...
+set "PYTHON_PATH="
 
-REM Check Path 2
-if exist "%LOCALAPPDATA%\Programs\Python\Python311\python.exe" (
-    set "PYTHON_PATH=%LOCALAPPDATA%\Programs\Python\Python311\python.exe"
-    goto :found_python
-)
-
-REM Check Path 3
-if exist "C:\Program Files\Python311\python.exe" (
-    set "PYTHON_PATH=C:\Program Files\Python311\python.exe"
-    goto :found_python
-)
-
-REM Check Path 4
-if exist "C:\Program Files (x86)\Python311\python.exe" (
-    set "PYTHON_PATH=C:\Program Files (x86)\Python311\python.exe"
-    goto :found_python
-)
-
-REM Try finding py launcher with 3.11
+REM First try py launcher with 3.11 (most reliable on Windows)
 py -3.11 --version >nul 2>&1
-if %errorlevel% equ 0 (
+if %errorlevel% EQU 0 (
     for /f "tokens=*" %%i in ('py -3.11 -c "import sys; print(sys.executable)"') do set "PYTHON_PATH=%%i"
     goto :found_python
 )
 
-REM If still not found, check if plain 'python' is 3.11
+REM Check if python command returns 3.11
 python --version 2>&1 | findstr "3.11" >nul
-if %errorlevel% equ 0 (
-    for /f "tokens=*" %%i in ('where python') do (
-        set "PYTHON_PATH=%%i"
-        goto :found_python
-    )
+if %errorlevel% EQU 0 (
+    for /f "tokens=*" %%i in ('where python 2^>nul') do set "PYTHON_PATH=%%i" & goto :found_python
 )
+
+REM Check common paths one by one using single-line if
+if exist "C:\Python311\python.exe" set "PYTHON_PATH=C:\Python311\python.exe" & goto :found_python
+if exist "%LOCALAPPDATA%\Programs\Python\Python311\python.exe" set "PYTHON_PATH=%LOCALAPPDATA%\Programs\Python\Python311\python.exe" & goto :found_python
+if exist "C:\Program Files\Python311\python.exe" set "PYTHON_PATH=C:\Program Files\Python311\python.exe" & goto :found_python
 
 :found_python
 
@@ -118,7 +64,7 @@ if defined PYTHON_PATH (
 ) else (
     echo [MISSING] Python 3.11 not found!
     echo.
-    echo Audio Separator STRICTLY requires Python 3.11 (not 3.12+).
+    echo Audio Separator STRICTLY requires Python 3.11.
     echo.
     echo Please download and install Python 3.11.8 for Windows from:
     echo https://www.python.org/downloads/release/python-3118/
