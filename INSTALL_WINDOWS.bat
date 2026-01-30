@@ -57,9 +57,14 @@ echo.
 echo [DEBUG 10] Starting Python check section...
 pause
 
+echo [DEBUG 10a] About to echo header...
 echo ========================================
+echo [DEBUG 10b] Header line 1 done.
 echo Step 1/5: Checking Python 3.11
+echo [DEBUG 10c] Title done.
 echo ========================================
+echo [DEBUG 10d] Header complete.
+pause
 
 echo [DEBUG 11] Checking C:\Python311...
 REM Check Path 1
