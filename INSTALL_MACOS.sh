@@ -161,6 +161,13 @@ cp -R "$SOURCE_DIR/CSXS" "$EXTENSION_PATH/"
 [ -f "$SOURCE_DIR/.debug" ] && cp "$SOURCE_DIR/.debug" "$EXTENSION_PATH/"
 [ -f "$SOURCE_DIR/README.md" ] && cp "$SOURCE_DIR/README.md" "$EXTENSION_PATH/"
 
+# Fix permissions
+echo "Fixing permissions..."
+chmod -R 755 "$EXTENSION_PATH"
+if [ -n "$SUDO_USER" ]; then
+    chown -R "$SUDO_USER:staff" "$EXTENSION_PATH"
+fi
+
 echo "[OK] Extension files installed."
 echo ""
 echo "Enabling CEP Debug Mode..."
