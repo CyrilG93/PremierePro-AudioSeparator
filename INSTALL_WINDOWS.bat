@@ -26,7 +26,7 @@ set "SOURCE_DIR=%~dp0"
 if "%SOURCE_DIR:~-1%"=="\" set "SOURCE_DIR=%SOURCE_DIR:~0,-1%"
 
 set "EXTENSION_PATH=%ProgramFiles(x86)%\Common Files\Adobe\CEP\extensions\PremierePro-AudioSeparator"
-set "CONFIG_FILE=%EXTENSION_PATH%\client\config.json"
+set "CONFIG_FILE=%EXTENSION_PATH%\config.json"
 
 echo Source directory: %SOURCE_DIR%
 echo Target directory: %EXTENSION_PATH%

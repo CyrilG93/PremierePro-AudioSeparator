@@ -12,7 +12,7 @@ echo ""
 # Get script directory
 SOURCE_DIR="$(cd "$(dirname "$0")" && pwd)"
 EXTENSION_PATH="/Library/Application Support/Adobe/CEP/extensions/PremierePro-AudioSeparator"
-CONFIG_FILE="$EXTENSION_PATH/client/config.json"
+CONFIG_FILE="$EXTENSION_PATH/config.json"
 
 echo "Source directory: $SOURCE_DIR"
 echo "Target directory: $EXTENSION_PATH"
@@ -205,10 +205,20 @@ chmod 666 "$CONFIG_FILE" # Ensure readable/writable
 if [ -f "$CONFIG_FILE" ]; then
     echo "[OK] Configuration saved to:"
     echo "     $CONFIG_FILE"
+    
+    # Ensuring permissions are correct for the config file specifically
+    if [ -n "$SUDO_USER" ]; then
+        chown "$SUDO_USER:staff" "$CONFIG_FILE"
+    fi
+    chmod 644 "$CONFIG_FILE"
+    
     echo ""
     echo "     Detected Settings:"
     echo "     Python: $PYTHON_PATH"
     echo "     FFmpeg: $FFMPEG_PATH"
+    echo ""
+    echo "     Config Content:"
+    cat "$CONFIG_FILE"
 else
     echo "[ERROR] Failed to create configuration file."
     exit 1

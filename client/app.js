@@ -409,10 +409,22 @@
         let config = {};
 
         try {
-            const configPath = path.join(__dirname, 'config.json');
+            // Config is now at extension root
+            // If __dirname is .../client, we need ../config.json
+            // But log showed __dirname was root.
+            // Let's try both to be robust.
+            let configPath = path.join(__dirname, 'config.json');
+
+            if (!fs.existsSync(configPath)) {
+                // Try client folder just in case
+                configPath = path.join(__dirname, 'client', 'config.json');
+            }
+
             if (fs.existsSync(configPath)) {
                 config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+                addLogMessage('✅ Config loaded successfully');
             } else {
+                addLogMessage('❌ Config file does not exist at path');
                 throw new Error('Config file not found');
             }
         } catch (e) {
