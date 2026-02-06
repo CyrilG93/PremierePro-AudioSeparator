@@ -2,16 +2,16 @@
  * CSInterface - v11.0.0
  */
 
-var CSInterface = function() {};
+var CSInterface = function () { };
 
-CSInterface.prototype.evalScript = function(script, callback) {
+CSInterface.prototype.evalScript = function (script, callback) {
     if (callback === null || callback === undefined) {
-        callback = function(result) {};
+        callback = function (result) { };
     }
     window.__adobe_cep__.evalScript(script, callback);
 };
 
-CSInterface.prototype.getSystemPath = function(pathType) {
+CSInterface.prototype.getSystemPath = function (pathType) {
     var path = decodeURI(window.__adobe_cep__.getSystemPath(pathType));
     var OSVersion = this.getOSInformation();
     if (OSVersion.indexOf("Windows") >= 0) {
@@ -22,7 +22,7 @@ CSInterface.prototype.getSystemPath = function(pathType) {
     return path;
 };
 
-CSInterface.prototype.getOSInformation = function() {
+CSInterface.prototype.getOSInformation = function () {
     var userAgent = navigator.userAgent;
     if (navigator.platform === "Win32" || navigator.platform === "Windows") {
         return "Windows" + userAgent.substring(userAgent.indexOf("Windows") + 8, userAgent.indexOf(";", userAgent.indexOf("Windows")));
@@ -32,24 +32,32 @@ CSInterface.prototype.getOSInformation = function() {
     return "Unknown";
 };
 
-CSInterface.prototype.getApplicationID = function() {
+CSInterface.prototype.getApplicationID = function () {
     var appId = this.hostEnvironment.appId;
     return appId;
 };
 
-CSInterface.prototype.addEventListener = function(type, listener, obj) {
+CSInterface.prototype.addEventListener = function (type, listener, obj) {
     window.addEventListener(type, listener, obj);
 };
 
-CSInterface.prototype.dispatchEvent = function(event) {
+CSInterface.prototype.dispatchEvent = function (event) {
     if (typeof event.data === "object") {
         event.data = JSON.stringify(event.data);
     }
     window.__adobe_cep__.dispatchEvent(event);
 };
 
+CSInterface.prototype.openURLInDefaultBrowser = function (url) {
+    if (typeof cep !== "undefined" && cep.util) {
+        cep.util.openURLInDefaultBrowser(url);
+    } else if (typeof window.cep !== "undefined" && window.cep.util) {
+        window.cep.util.openURLInDefaultBrowser(url);
+    }
+};
+
 Object.defineProperty(CSInterface.prototype, 'hostEnvironment', {
-    get: function() {
+    get: function () {
         return JSON.parse(window.__adobe_cep__.getHostEnvironment());
     }
 });
@@ -65,13 +73,13 @@ CSInterface.SystemPath = {
 };
 
 // Event types
-var CSEvent = function(type, scope, appId, extensionId) {
+var CSEvent = function (type, scope, appId, extensionId) {
     this.type = type;
     this.scope = scope || "GLOBAL";
     this.appId = appId;
     this.extensionId = extensionId;
 };
 
-CSEvent.prototype.dispatch = function() {
+CSEvent.prototype.dispatch = function () {
     window.__adobe_cep__.dispatchEvent(this);
 };

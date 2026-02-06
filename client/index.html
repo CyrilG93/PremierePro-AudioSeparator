@@ -13,7 +13,10 @@
         <header>
             <div class="header-content">
                 <div class="title-section">
-                    <h1 id="appTitle">🎵 Audio Separator</h1>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <h1 id="appTitle">🎵 Audio Separator</h1>
+                        <span id="versionInfo" class="version-badge">v2.3.1</span>
+                    </div>
                     <p class="subtitle" id="appSubtitle">Séparez voix et instruments</p>
                 </div>
                 <div class="language-selector">
@@ -22,6 +25,11 @@
                         <option value="fr">🇫🇷 Français</option>
                     </select>
                 </div>
+            </div>
+
+            <!-- Update Banner -->
+            <div id="updateBanner" class="update-banner" style="display: none;">
+                <span>🚀 Update available!</span>
             </div>
         </header>
 
@@ -149,10 +157,6 @@
                 </button>
             </section>
         </main>
-
-        <footer>
-            <p class="version">v2.3.0 - Robust | Powered by Demucs AI</p>
-        </footer>
     </div>
 
     <script src="lib/CSInterface.js"></script>

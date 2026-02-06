@@ -3,7 +3,7 @@
  * Supported languages: French (fr), English (en)
  */
 
-const translations = {
+window.translations = {
     fr: {
         // Header
         title: "Audio Separator",
@@ -39,9 +39,6 @@ const translations = {
 
         // Processing mode
         processingMode: "Mode de traitement:",
-        modeBalanced: " Équilibré (recommandé)",
-        modeFast: " Rapide (30-40% plus rapide)",
-        modeQuality: " Qualité maximale",
         modeBalanced: "⚖️ Équilibré (recommandé)",
         modeFast: "⚡ Rapide (30-40% plus rapide)",
         modeQuality: "🏆 Qualité maximale",
@@ -107,7 +104,6 @@ const translations = {
         outputFolder: "Dossier de sortie:",
         nextToOriginal: "(à côté du fichier d'origine)",
         preparation: "Préparation...",
-        searchingFiles: "Recherche des fichiers générés...",
         processError: "Erreur: Le processus s'est terminé avec le code",
         details: "Détails:",
         separationFailed: "Échec de la séparation (code:",
@@ -225,7 +221,6 @@ const translations = {
         outputFolder: "Output folder:",
         nextToOriginal: "(next to original file)",
         preparation: "Preparing...",
-        searchingFiles: "Searching for generated files...",
         processError: "Error: Process terminated with code",
         details: "Details:",
         separationFailed: "Separation failed (code:",
@@ -245,6 +240,6 @@ const translations = {
 };
 
 // Helper function to get translation
-function t(key) {
-    return translations[window.currentLanguage || 'fr'][key] || key;
-}
+window.t = function (key) {
+    return window.translations[window.currentLanguage || 'fr'][key] || key;
+};

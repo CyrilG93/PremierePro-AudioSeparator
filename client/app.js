@@ -10,6 +10,9 @@
     let separatedFiles = [];
     let originalProjectItem = null;
 
+    const GITHUB_REPO = 'CyrilG93/PremierePro-AudioSeparator';
+    let CURRENT_VERSION = '2.3.1'; // Will be updated from manifest
+
     // Language management - Default to English on first launch
     window.currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
 
@@ -179,7 +182,12 @@
         loadLanguage(window.currentLanguage);
 
         setupEventListeners();
+        setupEventListeners();
         checkPythonEnvironment();
+
+        // Check for updates
+        getAppVersion();
+        setTimeout(checkForUpdates, 1500);
     }
 
     /**
@@ -799,13 +807,153 @@
         if (seconds < 60) {
             return seconds + 's';
         } else if (seconds < 3600) {
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return mins + 'm ' + secs + 's';
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return minutes + 'm ' + remainingSeconds + 's';
         } else {
             const hours = Math.floor(seconds / 3600);
             const mins = Math.floor((seconds % 3600) / 60);
             return hours + 'h ' + mins + 'm';
+        }
+    }
+
+    // ============================================================================
+    // UPDATE SYSTEM
+    // ============================================================================
+
+
+    function getAppVersion() {
+        try {
+            const fs = require('fs');
+            const path = require('path');
+
+            var extensionPath = csInterface.getSystemPath(SystemPath.EXTENSION);
+            var manifestPath = path.join(extensionPath, 'CSXS', 'manifest.xml');
+
+            if (fs.existsSync(manifestPath)) {
+                var content = fs.readFileSync(manifestPath, 'utf8');
+                var match = content.match(/ExtensionBundleVersion="([^"]+)"/);
+                if (match && match[1]) {
+                    CURRENT_VERSION = match[1];
+                    console.log('Detected version:', CURRENT_VERSION);
+                }
+            }
+        } catch (e) {
+            console.error('Error reading manifest:', e);
+        }
+
+        // Update header UI
+        var versionEl = document.getElementById('versionInfo');
+        if (versionEl) {
+            versionEl.textContent = 'v' + CURRENT_VERSION;
+        }
+    }
+
+    function checkForUpdates() {
+        // Use https module via Node.js
+        const https = require('https');
+
+        var url = 'https://api.github.com/repos/' + GITHUB_REPO + '/releases/latest';
+
+        var options = {
+            headers: {
+                'User-Agent': 'Premiere-AudioSeparator-Extension'
+            }
+        };
+
+        https.get(url, options, function (res) {
+            var body = '';
+
+            res.on('data', function (chunk) {
+                body += chunk;
+            });
+
+            res.on('end', function () {
+                try {
+                    if (res.statusCode === 200) {
+                        var data = JSON.parse(body);
+                        var latestVersion = data.tag_name;
+
+                        // Remove 'v' prefix if present
+                        if (latestVersion && latestVersion.charAt(0) === 'v') {
+                            latestVersion = latestVersion.substring(1);
+                        }
+
+                        console.log('Latest Github version:', latestVersion);
+
+                        if (compareVersions(latestVersion, CURRENT_VERSION) > 0) {
+                            var downloadUrl = data.html_url; // Default to release page
+
+                            // Try to find a zip asset
+                            if (data.assets && data.assets.length > 0) {
+                                for (var i = 0; i < data.assets.length; i++) {
+                                    if (data.assets[i].name.endsWith('.zip')) {
+                                        downloadUrl = data.assets[i].browser_download_url;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            showUpdateBanner(downloadUrl);
+                            console.log('Update available:', latestVersion, 'Download:', downloadUrl);
+                        } else {
+                            console.log('App is up to date');
+                        }
+                    } else {
+                        console.log('Github API returned:', res.statusCode);
+                    }
+                } catch (e) {
+                    console.error('Error parsing Github response:', e);
+                }
+            });
+        }).on('error', function (e) {
+            console.error('Error checking updates:', e);
+        });
+    }
+
+    function compareVersions(v1, v2) {
+        if (!v1 || !v2) return 0;
+
+        var parts1 = v1.split('.').map(Number);
+        var parts2 = v2.split('.').map(Number);
+
+        for (var i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+            var p1 = parts1[i] || 0;
+            var p2 = parts2[i] || 0;
+
+            if (p1 > p2) return 1;
+            if (p1 < p2) return -1;
+        }
+
+        return 0;
+    }
+
+    function showUpdateBanner(downloadUrl) {
+        var banner = document.getElementById('updateBanner');
+        if (banner) {
+            banner.style.display = 'block';
+            banner.onclick = function () {
+                // DEBUG: Alert variables to see what's happening
+                alert('DEBUG: Click detected!\nURL: ' + downloadUrl);
+
+                if (downloadUrl) {
+                    try {
+                        alert('DEBUG: Opening URL via csInterface...');
+                        csInterface.openURLInDefaultBrowser(downloadUrl);
+                    } catch (e) {
+                        alert('DEBUG: Error csInterface: ' + e);
+                        // Fallback attempt
+                        try {
+                            alert('DEBUG: Trying fallback window.location...');
+                            window.location.href = downloadUrl;
+                        } catch (e2) {
+                            alert('DEBUG: Fallback failed: ' + e2);
+                        }
+                    }
+                } else {
+                    alert('Erreur: Lien de téléchargement introuvable (undefined).');
+                }
+            };
         }
     }
 
