@@ -933,22 +933,20 @@
         if (banner) {
             banner.style.display = 'block';
             banner.onclick = function () {
-                banner.onclick = function () {
-                    if (downloadUrl) {
+                if (downloadUrl) {
+                    try {
+                        csInterface.openURLInDefaultBrowser(downloadUrl);
+                    } catch (e) {
+                        console.error('[Update] Error opening URL:', e);
+                        // Fallback attempt
                         try {
-                            csInterface.openURLInDefaultBrowser(downloadUrl);
-                        } catch (e) {
-                            console.error('[Update] Error opening URL:', e);
-                            // Fallback attempt
-                            try {
-                                window.location.href = downloadUrl;
-                            } catch (e2) {
-                                console.error('[Update] Fallback failed:', e2);
-                            }
+                            window.location.href = downloadUrl;
+                        } catch (e2) {
+                            console.error('[Update] Fallback failed:', e2);
                         }
                     }
-                };
-            }
+                }
+            };
         }
 
         /**
