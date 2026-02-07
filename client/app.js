@@ -11,7 +11,7 @@
     let originalProjectItem = null;
 
     const GITHUB_REPO = 'CyrilG93/PremierePro-AudioSeparator';
-    let CURRENT_VERSION = '2.3.1'; // Will be updated from manifest
+    let CURRENT_VERSION = '2.3.2'; // Will be updated from manifest
 
     // Language management - Default to English on first launch
     window.currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
@@ -424,7 +424,12 @@
             let configPath = path.join(__dirname, 'config.json');
 
             if (!fs.existsSync(configPath)) {
-                // Try client folder just in case
+                // Try parent folder (if __dirname is client)
+                configPath = path.join(__dirname, '..', 'config.json');
+            }
+
+            if (!fs.existsSync(configPath)) {
+                // Try client folder (if __dirname is root and config is in client - unlikely but possible in some setups)
                 configPath = path.join(__dirname, 'client', 'config.json');
             }
 
@@ -948,137 +953,138 @@
                 }
             };
         }
+    }
 
-        /**
-         * Update progress bar
-         */
-        function updateProgress(percent, status) {
-            elements.progressFill.style.width = percent + '%';
-            elements.progressPercent.textContent = Math.round(percent) + '%';
-            elements.progressStatus.textContent = status;
-        }
+    /**
+     * Update progress bar
+     */
+    function updateProgress(percent, status) {
+        elements.progressFill.style.width = percent + '%';
+        elements.progressPercent.textContent = Math.round(percent) + '%';
+        elements.progressStatus.textContent = status;
+    }
 
-        /**
-         * Add message to progress log
-         */
-        function addLogMessage(message) {
-            const timestamp = new Date().toLocaleTimeString();
-            const logEntry = document.createElement('div');
-            logEntry.textContent = `[${timestamp}] ${message}`;
-            elements.progressLog.appendChild(logEntry);
-            elements.progressLog.scrollTop = elements.progressLog.scrollHeight;
-        }
+    /**
+     * Add message to progress log
+     */
+    function addLogMessage(message) {
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = document.createElement('div');
+        logEntry.textContent = `[${timestamp}] ${message}`;
+        elements.progressLog.appendChild(logEntry);
+        elements.progressLog.scrollTop = elements.progressLog.scrollHeight;
+    }
 
-        /**
-         * Handle successful separation
-         */
-        function handleSeparationSuccess(response) {
-            stopTimer();
-            updateProgress(100, t('separationCompleted'));
-            addLogMessage(t('separationCompleted'));
+    /**
+     * Handle successful separation
+     */
+    function handleSeparationSuccess(response) {
+        stopTimer();
+        updateProgress(100, t('separationCompleted'));
+        addLogMessage(t('separationCompleted'));
 
-            separatedFiles = response.files || [];
+        separatedFiles = response.files || [];
 
-            // Show results
-            elements.resultsSection.style.display = 'block';
-            elements.resultsList.innerHTML = '';
+        // Show results
+        elements.resultsSection.style.display = 'block';
+        elements.resultsList.innerHTML = '';
 
-            separatedFiles.forEach(function (file) {
-                const resultItem = document.createElement('div');
-                resultItem.className = 'result-item';
+        separatedFiles.forEach(function (file) {
+            const resultItem = document.createElement('div');
+            resultItem.className = 'result-item';
 
-                // Icon based on file type
-                let icon = '🎵';
-                if (file.type === 'vocals') icon = '🎤';
-                else if (file.type === 'instrumental') icon = '🎸';
-                else if (file.type === 'drums') icon = '🥁';
-                else if (file.type === 'bass') icon = '🎸';
-                else if (file.type === 'other') icon = '🎹';
+            // Icon based on file type
+            let icon = '🎵';
+            if (file.type === 'vocals') icon = '🎤';
+            else if (file.type === 'instrumental') icon = '🎸';
+            else if (file.type === 'drums') icon = '🥁';
+            else if (file.type === 'bass') icon = '🎸';
+            else if (file.type === 'other') icon = '🎹';
 
-                resultItem.textContent = `${icon} ${file.name}`;
-                elements.resultsList.appendChild(resultItem);
-            });
+            resultItem.textContent = `${icon} ${file.name}`;
+            elements.resultsList.appendChild(resultItem);
+        });
 
-            // Re-enable buttons
-            elements.selectBtn.disabled = false;
-            elements.separateBtn.disabled = false;
+        // Re-enable buttons
+        elements.selectBtn.disabled = false;
+        elements.separateBtn.disabled = false;
 
-            // Auto-import if enabled
-            if (elements.autoImport.checked) {
-                addLogMessage(t('autoImportEnabled'));
-                importToProject();
-            } else {
-                // Show import button if auto-import is disabled
-                elements.importBtn.style.display = 'block';
-            }
-
-            Utils.log('Separation completed successfully');
-        }
-
-        /**
-         * Handle separation error
-         */
-        function handleSeparationError(error) {
-            stopTimer();
-            updateProgress(0, 'Erreur lors de la séparation');
-            addLogMessage('❌ Erreur: ' + error);
-
-            Utils.showNotification('Erreur: ' + error, 'error');
-
-            // Re-enable buttons
-            elements.selectBtn.disabled = false;
-            elements.separateBtn.disabled = false;
-
-            Utils.log('Separation error: ' + error, 'error');
-        }
-
-        /**
-         * Import separated files back to Premiere Pro project
-         */
-        function importToProject() {
-            if (separatedFiles.length === 0) {
-                Utils.showNotification('Aucun fichier à importer.', 'error');
-                return;
-            }
-
-            elements.importBtn.disabled = true;
-            addLogMessage(t('importingFiles'));
-
-            // Escape the JSON string properly for ExtendScript
-            const filesJsonStr = JSON.stringify(separatedFiles).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-            const originalMediaPath = originalProjectItem ? originalProjectItem.path.replace(/\\/g, '\\\\').replace(/"/g, '\\"') : null;
-
-            csInterface.evalScript(`AudioSeparator_importFiles("${filesJsonStr}", "${originalMediaPath}")`, function (result) {
-                try {
-                    if (!result || result === 'undefined' || result === 'null') {
-                        addLogMessage('⚠️ Aucune réponse du serveur ExtendScript');
-                        Utils.showNotification('Erreur lors de l\'importation', 'error');
-                        elements.importBtn.disabled = false;
-                        return;
-                    }
-
-                    const response = JSON.parse(result);
-                    if (response.success) {
-                        const binInfo = response.binName ? ' ' + t('filesImported') + ' "' + response.binName + '"' : '';
-                        addLogMessage('✅ ' + response.imported + ' ' + t('filesImported') + binInfo);
-
-                        // Hide import button after successful import
-                        elements.importBtn.style.display = 'none';
-                    } else {
-                        addLogMessage('❌ Erreur d\'importation: ' + response.error);
-                    }
-                } catch (e) {
-                    addLogMessage('❌ Erreur: ' + e.message);
-                }
-                elements.importBtn.disabled = false;
-            });
-        }
-
-        // Initialize when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
+        // Auto-import if enabled
+        if (elements.autoImport.checked) {
+            addLogMessage(t('autoImportEnabled'));
+            importToProject();
         } else {
-            init();
+            // Show import button if auto-import is disabled
+            elements.importBtn.style.display = 'block';
         }
 
-    }) ();
+        Utils.log('Separation completed successfully');
+    }
+
+    /**
+     * Handle separation error
+     */
+    function handleSeparationError(error) {
+        stopTimer();
+        updateProgress(0, 'Erreur lors de la séparation');
+        addLogMessage('❌ Erreur: ' + error);
+
+        Utils.showNotification('Erreur: ' + error, 'error');
+
+        // Re-enable buttons
+        elements.selectBtn.disabled = false;
+        elements.separateBtn.disabled = false;
+
+        Utils.log('Separation error: ' + error, 'error');
+    }
+
+    /**
+     * Import separated files back to Premiere Pro project
+     */
+    function importToProject() {
+        if (separatedFiles.length === 0) {
+            Utils.showNotification('Aucun fichier à importer.', 'error');
+            return;
+        }
+
+        elements.importBtn.disabled = true;
+        addLogMessage(t('importingFiles'));
+
+        // Escape the JSON string properly for ExtendScript
+        const filesJsonStr = JSON.stringify(separatedFiles).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+        const originalMediaPath = originalProjectItem ? originalProjectItem.path.replace(/\\/g, '\\\\').replace(/"/g, '\\"') : null;
+
+        csInterface.evalScript(`AudioSeparator_importFiles("${filesJsonStr}", "${originalMediaPath}")`, function (result) {
+            try {
+                if (!result || result === 'undefined' || result === 'null') {
+                    addLogMessage('⚠️ Aucune réponse du serveur ExtendScript');
+                    Utils.showNotification('Erreur lors de l\'importation', 'error');
+                    elements.importBtn.disabled = false;
+                    return;
+                }
+
+                const response = JSON.parse(result);
+                if (response.success) {
+                    const binInfo = response.binName ? ' ' + t('filesImported') + ' "' + response.binName + '"' : '';
+                    addLogMessage('✅ ' + response.imported + ' ' + t('filesImported') + binInfo);
+
+                    // Hide import button after successful import
+                    elements.importBtn.style.display = 'none';
+                } else {
+                    addLogMessage('❌ Erreur d\'importation: ' + response.error);
+                }
+            } catch (e) {
+                addLogMessage('❌ Erreur: ' + e.message);
+            }
+            elements.importBtn.disabled = false;
+        });
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+})();
