@@ -73,7 +73,7 @@ Go to **Window** > **Extensions** > **Audio Separator**
 *   **Performance**: Choose between Fast (Quantized), Balanced, or Quality.
 *   **GPU Support**: Auto-detects NVIDIA CUDA or Apple Silicon (MPS).
 *   **Formats**: MP3, WAV, FLAC.
-*   **Premiere Pro**: Auto-import to project, localized UI (EN/FR).
+*   **Premiere Pro**: Auto-import to project, localized UI (Chinese Simplified, English, French, German, Italian, Japanese, Portuguese-BR, Russian, Spanish).
 
 ---
 

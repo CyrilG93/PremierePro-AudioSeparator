@@ -64,7 +64,8 @@
      */
     function loadLanguage(lang) {
         window.currentLanguage = lang;
-        const tr = translations[lang];
+        // Fallback to English if an unsupported language code is stored in preferences.
+        const tr = translations[lang] || translations.en;
 
         // Update header
         elements.appTitle.textContent = tr.title;
