@@ -37,14 +37,15 @@ This extension needs the following tools installed on your computer.
 
 #### Step 2: Run the Installer
 1.  Open Terminal.
-2.  Navigate to the extracted folder:
+2.  **Easiest method (recommended):** drag and drop `INSTALL_MACOS.sh` into the Terminal window, then press Enter.
+3.  **Manual method (command line):** navigate to the extracted folder and run:
     ```bash
     cd /path/to/PremierePro-AudioSeparator
     chmod +x INSTALL_MACOS.sh
     ./INSTALL_MACOS.sh
     ```
-3.  The installer will detect your Python/FFmpeg paths, create a config file, and install the extension.
-4.  To refresh dependencies later (without reinstalling the extension), run `UPDATE_DEPENDENCIES.sh`.
+4.  The installer will detect your Python/FFmpeg paths, create a config file, and install the extension.
+5.  To refresh dependencies later (without reinstalling the extension), run `UPDATE_DEPENDENCIES.sh`.
 
 #### Step 3: Restart Premiere Pro
 Go to **Window** > **Extensions** > **Audio Separator**
@@ -108,14 +109,15 @@ Cette extension nécessite l'installation des outils suivants.
 
 #### Étape 2 : Lancer l'installateur
 1.  Ouvrez le Terminal.
-2.  Allez dans le dossier extrait :
+2.  **Méthode la plus simple (recommandée)** : glissez-déposez `INSTALL_MACOS.sh` dans la fenêtre du Terminal, puis appuyez sur Entrée.
+3.  **Méthode manuelle (ligne de commande)** : allez dans le dossier extrait puis lancez :
     ```bash
     cd /chemin/vers/PremierePro-AudioSeparator
     chmod +x INSTALL_MACOS.sh
     ./INSTALL_MACOS.sh
     ```
-3.  L'installateur va détecter vos chemins Python/FFmpeg, créer la configuration, et installer l'extension.
-4.  Pour mettre à jour les dépendances plus tard (sans réinstaller l'extension), lancez `UPDATE_DEPENDENCIES.sh`.
+4.  L'installateur va détecter vos chemins Python/FFmpeg, créer la configuration, et installer l'extension.
+5.  Pour mettre à jour les dépendances plus tard (sans réinstaller l'extension), lancez `UPDATE_DEPENDENCIES.sh`.
 
 #### Étape 3 : Redémarrer Premiere Pro
 Allez dans **Fenêtre** > **Extensions** > **Audio Separator**
