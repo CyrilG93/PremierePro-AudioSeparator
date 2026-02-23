@@ -136,6 +136,7 @@ xcopy /E /I /Y "%SOURCE_DIR%\CSXS" "%EXTENSION_PATH%\CSXS" >nul
 
 if exist "%SOURCE_DIR%\.debug" copy /Y "%SOURCE_DIR%\.debug" "%EXTENSION_PATH%\" >nul
 if exist "%SOURCE_DIR%\README.md" copy /Y "%SOURCE_DIR%\README.md" "%EXTENSION_PATH%\" >nul
+if exist "%SOURCE_DIR%\UPDATE_DEPENDENCIES.bat" copy /Y "%SOURCE_DIR%\UPDATE_DEPENDENCIES.bat" "%EXTENSION_PATH%\UPDATE_DEPENDENCIES.bat" >nul
 
 echo [OK] Files installed.
 
@@ -185,5 +186,6 @@ echo ========================================
 echo.
 echo 1. Restart Adobe Premiere Pro
 echo 2. Open Window ^> Extensions ^> Audio Separator
+echo 3. Run UPDATE_DEPENDENCIES.bat later to refresh Demucs/FFmpeg
 echo.
 pause

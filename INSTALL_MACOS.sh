@@ -1,11 +1,11 @@
 #!/bin/bash
 # Audio Separator for Premiere Pro - macOS Installer
-# Version 2.3.0
+# Version 2.3.2
 
 echo ""
 echo "========================================"
 echo "Audio Separator for Premiere Pro"
-echo "Installation Package v2.3.0 - macOS"
+echo "Installation Package v2.3.2 - macOS"
 echo "========================================"
 echo ""
 
@@ -17,6 +17,9 @@ CONFIG_FILE="$EXTENSION_PATH/config.json"
 echo "Source directory: $SOURCE_DIR"
 echo "Target directory: $EXTENSION_PATH"
 echo ""
+
+# Ensure the dependency updater is executable when launched from the extracted folder.
+[ -f "$SOURCE_DIR/UPDATE_DEPENDENCIES.sh" ] && chmod +x "$SOURCE_DIR/UPDATE_DEPENDENCIES.sh"
 
 # Check for sudo and auto-elevate if needed
 if [ "$EUID" -ne 0 ]; then
@@ -160,10 +163,12 @@ cp -R "$SOURCE_DIR/CSXS" "$EXTENSION_PATH/"
 # Copy optional debug file if exists
 [ -f "$SOURCE_DIR/.debug" ] && cp "$SOURCE_DIR/.debug" "$EXTENSION_PATH/"
 [ -f "$SOURCE_DIR/README.md" ] && cp "$SOURCE_DIR/README.md" "$EXTENSION_PATH/"
+[ -f "$SOURCE_DIR/UPDATE_DEPENDENCIES.sh" ] && cp "$SOURCE_DIR/UPDATE_DEPENDENCIES.sh" "$EXTENSION_PATH/"
 
 # Fix permissions
 echo "Fixing permissions..."
 chmod -R 755 "$EXTENSION_PATH"
+[ -f "$EXTENSION_PATH/UPDATE_DEPENDENCIES.sh" ] && chmod +x "$EXTENSION_PATH/UPDATE_DEPENDENCIES.sh"
 if [ -n "$SUDO_USER" ]; then
     chown -R "$SUDO_USER:staff" "$EXTENSION_PATH"
 fi
@@ -231,4 +236,5 @@ echo "========================================"
 echo ""
 echo "1. Restart Adobe Premiere Pro"
 echo "2. Open Window > Extensions > Audio Separator"
+echo "3. Run UPDATE_DEPENDENCIES.sh later to refresh Demucs/FFmpeg"
 echo ""

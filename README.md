@@ -1,4 +1,4 @@
-# 🎵 Audio Separator v2.3 - Premiere Pro Plugin
+# 🎵 Audio Separator v2.3.2 - Premiere Pro Plugin
 
 Professional plugin to separate audio tracks into stems (vocals, instrumental, drums, bass) directly in Adobe Premiere Pro, powered by Demucs AI.
 
@@ -44,6 +44,7 @@ This extension needs the following tools installed on your computer.
     ./INSTALL_MACOS.sh
     ```
 3.  The installer will detect your Python/FFmpeg paths, create a config file, and install the extension.
+4.  To refresh dependencies later (without reinstalling the extension), run `UPDATE_DEPENDENCIES.sh`.
 
 #### Step 3: Restart Premiere Pro
 Go to **Window** > **Extensions** > **Audio Separator**
@@ -60,6 +61,7 @@ Go to **Window** > **Extensions** > **Audio Separator**
 #### Step 2: Run the Installer
 1.  Right-click `INSTALL_WINDOWS.bat` → **Run as administrator**.
 2.  Follow the instructions. It will find Python 3.11, install Demucs, and configure the plugin.
+3.  To refresh dependencies later (without reinstalling the extension), run `UPDATE_DEPENDENCIES.bat`.
 
 #### Step 3: Restart Premiere Pro
 Go to **Window** > **Extensions** > **Audio Separator**
@@ -113,6 +115,7 @@ Cette extension nécessite l'installation des outils suivants.
     ./INSTALL_MACOS.sh
     ```
 3.  L'installateur va détecter vos chemins Python/FFmpeg, créer la configuration, et installer l'extension.
+4.  Pour mettre à jour les dépendances plus tard (sans réinstaller l'extension), lancez `UPDATE_DEPENDENCIES.sh`.
 
 #### Étape 3 : Redémarrer Premiere Pro
 Allez dans **Fenêtre** > **Extensions** > **Audio Separator**
@@ -129,11 +132,12 @@ Allez dans **Fenêtre** > **Extensions** > **Audio Separator**
 #### Étape 2 : Lancer l'installateur
 1.  Clic-droit sur `INSTALL_WINDOWS.bat` → **Exécuter en tant qu'administrateur**.
 2.  Suivez les instructions. Il va trouver Python 3.11, installer Demucs et configurer le plugin.
+3.  Pour mettre à jour les dépendances plus tard (sans réinstaller l'extension), lancez `UPDATE_DEPENDENCIES.bat`.
 
 #### Étape 3 : Redémarrer Premiere Pro
 Allez dans **Fenêtre** > **Extensions** > **Audio Separator**
 
 ---
 
-**Version**: 2.3.0  
+**Version**: 2.3.2
 **Auteur**: Cyril V
