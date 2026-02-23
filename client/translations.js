@@ -118,7 +118,7 @@ window.translations = {
         filesImported: "fichier(s) importé(s) dans le dossier",
 
         // Footer
-        version: "v2.3.2 - Robust",
+        version: "v2.4.0 - Robust",
         poweredBy: "Propulsé par Demucs AI"
     },
 
@@ -235,7 +235,7 @@ window.translations = {
         filesImported: "file(s) imported to folder",
 
         // Footer
-        version: "v2.3.2 - Robust",
+        version: "v2.4.0 - Robust",
         poweredBy: "Powered by Demucs AI"
     }
 };

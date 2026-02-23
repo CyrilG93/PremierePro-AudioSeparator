@@ -1,11 +1,11 @@
 #!/bin/bash
 # Audio Separator for Premiere Pro - macOS Installer
-# Version 2.3.2
+# Version 2.4.0
 
 echo ""
 echo "========================================"
 echo "Audio Separator for Premiere Pro"
-echo "Installation Package v2.3.2 - macOS"
+echo "Installation Package v2.4.0 - macOS"
 echo "========================================"
 echo ""
 
