@@ -8,6 +8,17 @@ Professional plugin to separate audio tracks into stems (vocals, instrumental, d
 
 # English
 
+---
+
+## ✨ Features
+*   **Separation**: 2 Stems (Vocals/Inst) or 4 Stems (Vocals/Drums/Bass/Other).
+*   **Performance**: Choose between Fast (Quantized), Balanced, or Quality.
+*   **GPU Support**: Auto-detects NVIDIA CUDA or Apple Silicon (MPS).
+*   **Formats**: MP3, WAV, FLAC.
+*   **Premiere Pro**: Auto-import to project, localized UI (Chinese Simplified, English, French, German, Italian, Japanese, Portuguese-BR, Russian, Spanish).
+
+---
+
 ## 📋 Requirements
 
 This extension needs the following tools installed on your computer.
@@ -66,15 +77,6 @@ Go to **Window** > **Extensions** > **Audio Separator**
 
 #### Step 3: Restart Premiere Pro
 Go to **Window** > **Extensions** > **Audio Separator**
-
----
-
-## ✨ Features
-*   **Separation**: 2 Stems (Vocals/Inst) or 4 Stems (Vocals/Drums/Bass/Other).
-*   **Performance**: Choose between Fast (Quantized), Balanced, or Quality.
-*   **GPU Support**: Auto-detects NVIDIA CUDA or Apple Silicon (MPS).
-*   **Formats**: MP3, WAV, FLAC.
-*   **Premiere Pro**: Auto-import to project, localized UI (Chinese Simplified, English, French, German, Italian, Japanese, Portuguese-BR, Russian, Spanish).
 
 ---
 
